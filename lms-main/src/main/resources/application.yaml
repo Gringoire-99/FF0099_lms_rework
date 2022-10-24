@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456789
+    #    管理商品服务
+    url: jdbc:mysql://localhost:3306/lms2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+  jackson:
+    date-format: yyyy-MM-dd HH-mm-ss
+  application:
+    name: lms-main
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+server:
+  port: 8000
+logging:
+  level:
+    com.demo.sm: debug
