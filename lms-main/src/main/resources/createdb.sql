@@ -119,37 +119,6 @@ create table if not exists lms2.`borrow_record`
     `return_time` bigint   not null comment '还书时间',
     primary key (user_id, book_id)
 ) comment '借书记录';
-
--- 管理员列表
-create table if not exists lms2.`admin`
-(
-    `admin_name` varchar(256) not null comment '管理员名',
-    `admin_id` bigint not null comment 'id' primary key,
-    `phone_number` varchar(256) default '无' not null comment '电话',
-    `avatar_pic` varchar(256) null comment '头像图片',
-    `password` varchar(256) default '123456789' not null comment '密码'
-) comment '管理员列表';
-
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('史风华', 4560867730047, '20931837129');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('梁天磊', 7185395254357, '07846405391');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('吕弘文', 9455627040625, '30007839543');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('孙智渊', 7317395981871, '82497668547');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('李伟祺', 3657724810008, '06073467026');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('史煜祺', 5018777066927, '69036387192');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('贾修洁', 3824945682791, '33933827423');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('陆思', 6715102441459, '12667246205');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('董旭尧', 8463009356889, '03139908015');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('曹伟宸', 4459899451200, '13570664470');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('武思源', 7844416646832, '88262991221');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('邱懿轩', 8275858128212, '49102123287');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('王苑博', 7802301004172, '36001211063');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('洪雪松', 3364438638521, '93010439664');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('许修洁', 2864880224430, '54823452203');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('洪瑞霖', 8691549704051, '55919583422');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('郭鹏', 6741742777316, '04748715688');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('梁建辉', 0171346257253, '47644666182');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('叶伟祺', 1574741479118, '94109010520');
-insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('邵明轩', 3776602851132, '07428144817');
 -- 评论
 create table if not exists lms2.`comment`
 (
