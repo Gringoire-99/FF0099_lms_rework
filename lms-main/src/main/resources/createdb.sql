@@ -15,7 +15,9 @@ create table if not exists lms2.`book`
     `likes` bigint default 0 null comment '点赞数',
     `price` decimal default 0 not null comment '价格',
     `summary` varchar(256) default '无' null comment '摘要',
-    `cover_pic` varchar(256) default '无封面' null comment '图片的url地址'
+    `cover_pic` varchar(256) default '无封面' null comment '图片的url地址',
+    CONSTRAINT CHECK ( price > 0 ),
+    CHECK ( reading_number >= 0 )
 ) comment '图书表';
 
 insert into lms2.`book` (`book_id`, `author`, `number`, `reading_number`, `press`, `book_name`, `press_time`, `stars`, `likes`, `price`) values (1223346223184, '孟聪健', '74', 0, 'L@H出版社', '《b<?fO》', '2022-10-17 12:35:16', 0, 0, 811);
@@ -119,19 +121,23 @@ create table if not exists lms2.`borrow_record`
     `book_id`     bigint   not null comment '图书id',
     `borrow_time` datetime not null comment '借书时间',
     `return_time` bigint   not null comment '还书时间',
-    primary key (user_id, book_id)
+    primary key (user_id, book_id),
+    CONSTRAINT CHECK ( borrow_record.return_time > borrow_record.borrow_time ),
+    CONSTRAINT FOREIGN KEY (book_id) REFERENCES lms2.book (book_id) ON UPDATE CASCADE,
+    CONSTRAINT FOREIGN KEY (user_id) REFERENCES lms2.user (user_id) ON UPDATE CASCADE
 ) comment '借书记录';
 -- 评论
 create table if not exists lms2.`comment`
 (
     `content` varchar(256) default '无' not null comment '评论内容',
     `user_id` bigint not null comment '评论用户id',
-    `user_name` varchar(256) default '无' not null comment '评论用户名',
-    `avatar_pic` varchar(256) null comment '头像图片',
     `likes` bigint default 0 null comment '点赞数',
     `dislikes` bigint default 0 null comment '踩数',
     `book_id` bigint not null comment '书id',
-    primary key (user_id,book_id)
+    primary key (user_id,book_id),
+    constraint foreign key (user_id) references lms2.user(user_id),
+    constraint foreign key (book_id) references lms2.book(book_id)
+
 ) comment '评论';
 -- 收藏夹
 create table if not exists lms2.`favorites`
@@ -139,8 +145,40 @@ create table if not exists lms2.`favorites`
     `book_id` bigint not null comment '收藏书id',
     `user_id` bigint not null comment '收藏人id',
     `url` varchar(256) not null comment '收藏url',
-    primary key (book_id,user_id)
+    primary key (book_id,user_id),
+    constraint foreign key (book_id) references book(book_id),
+    foreign key (user_id) references user(user_id)
 ) comment '收藏夹';
+-- 管理员列表
+create table if not exists lms2.`admin`
+(
+    `admin_name` varchar(256) not null comment '管理员名',
+    `admin_id` bigint not null comment 'id' primary key,
+    `phone_number` varchar(256) default '无' not null comment '电话',
+    `avatar_pic` varchar(256) null comment '头像图片',
+    `password` varchar(256) default 123456789
+) comment '管理员列表';
+
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('卢鸿涛', 0391797662579, '45866102632');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('刘乐驹', 7586397874319, '86810190793');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('严明轩', 9883906308312, '55379647433');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('田金鑫', 5221492809306, '79550632936');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('崔展鹏', 0341559201665, '89435058289');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('高潇然', 5015485432935, '20727021135');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('任耀杰', 4600566993566, '30131105168');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('宋浩', 7125329819156, '23403188139');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('戴鹤轩', 8380787912682, '81384666121');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('唐熠彤', 2997845778293, '65213541230');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('许伟宸', 5264962544057, '54558980170');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('陈笑愚', 5438490811032, '67015412602');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('董博文', 7675937405174, '64106775481');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('郝思聪', 6910532567230, '72995661267');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('李子默', 5262816196227, '32793371491');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('侯思淼', 0319073515228, '46728227889');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('莫烨霖', 5361662862975, '88985719056');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('崔旭尧', 2445024087111, '21441732234');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('董炎彬', 2820408627137, '61785499614');
+insert into lms2.`admin` (`admin_name`, `admin_id`, `phone_number`) values ('阎擎苍', 1930101209730, '98065492567');
 # ************************************后台管理系统***********************************************
 create database if not exists lms2_admin;
 -- 菜单

@@ -16,5 +16,9 @@ import java.util.Map;
 public interface UserService extends IService<UserEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    UserEntity login(UserEntity user);
+
+    UserEntity getUser(String phoneNumber, String password);
 }
 

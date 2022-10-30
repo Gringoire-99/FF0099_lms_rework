@@ -3,19 +3,17 @@ package com.example.lmsmain.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import ch.qos.logback.core.status.ErrorStatus;
 import common.utils.PageUtils;
 import common.utils.R;
+import kotlin.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.lmsmain.entity.UserEntity;
 import com.example.lmsmain.service.UserService;
 
-
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -30,6 +28,18 @@ import com.example.lmsmain.service.UserService;
 public class UserController {
     @Autowired
     private UserService userService;
+    /**
+     * 登录
+     */
+    @GetMapping("/login")
+    public R login(@RequestParam String phoneNumber, @RequestParam String password) {
+        UserEntity user = userService.getUser(phoneNumber, password);
+        if (user == null) {
+            return R.error().put("msg","登录失败");
+        }
+        return R.ok().put("user",user);
+
+    }
 
     /**
      * 列表
