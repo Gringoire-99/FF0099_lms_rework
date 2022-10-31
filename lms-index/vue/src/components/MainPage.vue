@@ -77,11 +77,6 @@
                 <el-menu-item class="hvr-underline-from-center" index="2-2" @click="pushBookRecordPage">查看借阅记录
                 </el-menu-item>
               </el-menu-item-group>
-              <el-sub-menu class="hvr-grow-shadow" index="2-4">
-                <template #title>用户信息<span class="fill"></span></template>
-                <el-menu-item class="hvr-underline-from-center" index="2-4-2" @click="pushUserManagerPage">用户管理
-                </el-menu-item>
-              </el-sub-menu>
             </el-sub-menu>
           </el-menu>
         </el-scrollbar>
@@ -220,15 +215,10 @@ export default {
     this.requestBookList()
     this.requestBookRecord();
     //在页面加载时，判断用户权限（游客，用户，管理员），在后端读取用户信息，初始化用户信息
-    let name = localStorage.getItem('userName')
+    let name = localStorage.getItem('userId')
     if (name != null) {
       this.$store.state.isLogin = true
-      this.$store.state.user.userName = name
       this.$store.state.user.userId = localStorage.getItem('userId')
-      this.$store.state.user.role = localStorage.getItem('role')
-      this.$store.state.user.remark = localStorage.getItem('remark')
-      this.$store.state.user.gender = localStorage.getItem('gender')
-      this.$store.state.user.birthdate = localStorage.getItem('birthdate')
     } else {
       this.warningPopUp('您还未登录，仅能访问部分资源', '未登录')
     }

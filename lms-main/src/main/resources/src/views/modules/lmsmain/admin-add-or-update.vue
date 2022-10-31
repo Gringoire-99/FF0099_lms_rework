@@ -13,8 +13,8 @@
     <el-form-item label="头像图片" prop="avatarPic">
       <el-input v-model="dataForm.avatarPic" placeholder="头像图片"></el-input>
     </el-form-item>
-    <el-form-item label="密码" prop="password">
-      <el-input v-model="dataForm.password" placeholder="密码"></el-input>
+    <el-form-item label="" prop="password">
+      <el-input v-model="dataForm.password" placeholder=""></el-input>
     </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -47,7 +47,7 @@
             { required: true, message: '头像图片不能为空', trigger: 'blur' }
           ],
           password: [
-            { required: true, message: '密码不能为空', trigger: 'blur' }
+            { required: true, message: '不能为空', trigger: 'blur' }
           ]
         }
       }

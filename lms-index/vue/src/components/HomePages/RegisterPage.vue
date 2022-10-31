@@ -13,24 +13,24 @@
           </el-header>
           <el-main class="hvr-border-fade">
             <el-form label-width="120px">
-              <el-form-item label="学号">
+              <el-form-item label="手机号">
                 <el-tooltip
                     class="box-item"
                     effect="dark"
-                    content="请输入您的学号"
+                    content="请输入您的手机号"
                     placement="right-start"
                 >
-                  <el-input v-model="form.id" type="number"/>
+                  <el-input v-model="user.phoneNumber" type="number"/>
                 </el-tooltip>
               </el-form-item>
-              <el-form-item label="用户姓名">
+              <el-form-item label="用户名">
                 <el-tooltip
                     class="box-item"
                     effect="dark"
                     content="请输入您的姓名"
                     placement="right-start"
                 >
-                  <el-input v-model="form.name"/>
+                  <el-input v-model="user.userName"/>
                 </el-tooltip>
               </el-form-item>
               <el-form-item label="用户密码">
@@ -40,12 +40,24 @@
                     content="请输入您的密码"
                     placement="right-start"
                 >
-                  <el-input v-model="form.password" type="password" show-password/>
+                  <el-input v-model="user.password" type="password" show-password/>
                 </el-tooltip>
               </el-form-item>
+
+              <el-form-item label="重复密码">
+                <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="确认你的密码输入无误"
+                    placement="right-start"
+                >
+                  <el-input v-model="user.passwordRepeat" type="password" show-password/>
+                </el-tooltip>
+              </el-form-item>
+
               <el-form-item label="用户类型">
-                <el-select v-model="form.role" placeholder="选择你的角色">
-                  <el-option label="普通用户" value="user"/>
+                <el-select placeholder="普通用户" >
+                  <el-option label="普通用户" value="true"/>
                 </el-select>
               </el-form-item>
               <el-form-item>
@@ -117,16 +129,19 @@
 import axios from "axios";
 import {ElNotification} from "element-plus";
 
-const checkData = function (data) {
-  if (data === null) return false
-  if (!/^\d{6,20}$/.test(data.userId)) {
-    return 'Id长度为6-20位，只能包含数字'
+const checkData = function (user) {
+  console.log(user)
+  if (!/^1[34578][0-9]{9}$/.test(user.phoneNumber)){
+    return '请输入合法手机'
   }
-  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(data.userName)) {
+  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(user.userName)) {
     return '姓名为空或包含非法字符'
   }
-  if (!/^[A-Za-z\d_ ]{6,30}$/.test(data.userPassword)) {
+  if (!/^[A-Za-z\d_ ]{6,30}$/.test(user.password)) {
     return '密码长度为6-30位，且不能包含特殊字符'
+  }
+  if (user.password !== user.passwordRepeat){
+    return '两次输入的密码不一致'
   }
 
   return 'correct'
@@ -136,11 +151,11 @@ export default {
   name: "RegisterPage",
   data() {
     return {
-      form: {
-        id: '',
-        name: '',
+      user: {
+        phoneNumber:'',
+        userName: '',
         password: '',
-        role: ''
+        passwordRepeat:''
       },
       registerSuccessStatus: false,
       registerFailStatus: false,
@@ -155,15 +170,7 @@ export default {
   methods: {
     submit() {
       let registerMsg = ''
-      let user = {
-        role:'user',
-        birthdate:null,
-        gender:null,
-        remark:null
-      }
-      user.userId = this.form.id;
-      user.userName = this.form.name;
-      user.userPassword = this.form.password;
+      let user = this.user
       registerMsg = checkData(user)
       if (registerMsg !== 'correct') {
         this.warningPopUp(registerMsg,'注册失败')
@@ -173,7 +180,7 @@ export default {
         return
       }
       new Promise((resolve, reject) => {
-        axios.post('/api/register',user).then(value => {
+        axios.post('/api/user/save',user).then(value => {
           if (value.data.code!==200){
             reject()
           }
@@ -183,13 +190,7 @@ export default {
         })
       }).then(value => {
         this.successPopUp('即将跳转页面','注册成功')
-        console.log(value);
-        localStorage.setItem('userName', value.data.userName)
-        localStorage.setItem('userId', value.data.userId)
-        localStorage.setItem('gender', value.data.gender)
-        localStorage.setItem('remark', value.data.remark)
-        localStorage.setItem('birthdate', value.data.birthdate)
-        localStorage.setItem('role', value.data.role) //待加密
+        this.$store.status.isLogin = true
         this.$router.push('/UserPage')
         setTimeout(()=>{
           location.reload()

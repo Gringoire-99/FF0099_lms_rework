@@ -50,7 +50,7 @@
         prop="password"
         header-align="center"
         align="center"
-        label="密码">
+        label="">
       </el-table-column>
       <el-table-column
         fixed="right"

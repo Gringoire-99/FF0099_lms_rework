@@ -35,18 +35,6 @@
         label="评论用户id">
       </el-table-column>
       <el-table-column
-        prop="userName"
-        header-align="center"
-        align="center"
-        label="评论用户名">
-      </el-table-column>
-      <el-table-column
-        prop="avatarPic"
-        header-align="center"
-        align="center"
-        label="头像图片">
-      </el-table-column>
-      <el-table-column
         prop="likes"
         header-align="center"
         align="center"

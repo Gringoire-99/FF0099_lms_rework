@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('lmsmain:comment:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('lmsmain:comment:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button  type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button  type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -33,18 +33,6 @@
         header-align="center"
         align="center"
         label="评论用户id">
-      </el-table-column>
-      <el-table-column
-        prop="userName"
-        header-align="center"
-        align="center"
-        label="评论用户名">
-      </el-table-column>
-      <el-table-column
-        prop="avatarPic"
-        header-align="center"
-        align="center"
-        label="头像图片">
       </el-table-column>
       <el-table-column
         prop="likes"

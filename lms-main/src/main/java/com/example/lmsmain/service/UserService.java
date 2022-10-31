@@ -11,14 +11,12 @@ import java.util.Map;
  *
  * @author gg
  * @email ggs@gmail.com
- * @date 2022-10-24 16:13:48
+ * @date 2022-10-31 12:39:08
  */
 public interface UserService extends IService<UserEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    UserEntity login(UserEntity user);
-
-    UserEntity getUser(String phoneNumber, String password);
+    UserEntity doLogin(Map<String, Object> params);
 }
 

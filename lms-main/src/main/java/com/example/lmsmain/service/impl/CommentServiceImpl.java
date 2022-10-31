@@ -1,6 +1,7 @@
 package com.example.lmsmain.service.impl;
 
 import common.utils.PageUtils;
+import common.utils.Query;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,8 +12,7 @@ import com.example.lmsmain.dao.CommentDao;
 import com.example.lmsmain.entity.CommentEntity;
 import com.example.lmsmain.service.CommentService;
 
-import common.utils.PageUtils;
-import common.utils.Query;
+
 @Service("commentService")
 public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> implements CommentService {
 

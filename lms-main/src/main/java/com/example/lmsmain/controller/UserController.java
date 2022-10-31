@@ -3,17 +3,19 @@ package com.example.lmsmain.controller;
 import java.util.Arrays;
 import java.util.Map;
 
-import ch.qos.logback.core.status.ErrorStatus;
 import common.utils.PageUtils;
 import common.utils.R;
-import kotlin.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.lmsmain.entity.UserEntity;
 import com.example.lmsmain.service.UserService;
 
-import javax.servlet.http.HttpServletRequest;
+
 
 
 /**
@@ -21,26 +23,23 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author gg
  * @email ggs@gmail.com
- * @date 2022-10-24 16:13:48
+ * @date 2022-10-31 12:39:08
  */
 @RestController
 @RequestMapping("lmsmain/user")
 public class UserController {
     @Autowired
     private UserService userService;
-    /**
-     * 登录
-     */
-    @GetMapping("/login")
-    public R login(@RequestParam String phoneNumber, @RequestParam String password) {
-        UserEntity user = userService.getUser(phoneNumber, password);
-        if (user == null) {
-            return R.error().put("msg","登录失败");
+
+    @RequestMapping("/login")
+    public R login(@RequestParam Map<String,Object> params){
+        UserEntity user = userService.doLogin(params);
+        if (user!=null){
+            user.setPassword(null);
+            return R.ok().put("user",user);
         }
-        return R.ok().put("user",user);
-
+        return R.error("登录失败");
     }
-
     /**
      * 列表
      */
@@ -58,7 +57,7 @@ public class UserController {
     @RequestMapping("/info/{userId}")
     public R info(@PathVariable("userId") Long userId){
 		UserEntity user = userService.getById(userId);
-
+        user.setPassword(null);
         return R.ok().put("user", user);
     }
 

@@ -181,7 +181,8 @@ export default {
       })
       //是否能访问服务器
       p.then(data => {
-        if (data.success) return Promise.resolve(data)
+        console.log(data)
+        if (data.msg==="success") return Promise.resolve(data)
         else return Promise.reject(data)
       }, reason => {
         this.loginMessage = '访问失败:' + reason.code
@@ -204,12 +205,7 @@ export default {
       }).
           //是否能登录到服务器
           then(data => {
-            localStorage.setItem('userName', data.data.userName)
-            localStorage.setItem('userId', data.data.userId)
-            localStorage.setItem('gender', data.data.gender)
-            localStorage.setItem('remark', data.data.remark)
-            localStorage.setItem('birthdate', data.data.birthdate)
-            localStorage.setItem('role', data.data.role) //待加密
+            localStorage.setItem('userId', data.user.userId)
             this.loginMessage = '登录成功 code:' + data.code
             this.loginStatusFail = false
             this.loginStatusSuccess = true
@@ -227,7 +223,7 @@ export default {
                 this.showProgress = false
                 this.status = ''
                 this.progress = 0;
-                this.$router.push('/UserPage')
+                // this.$router.push('/UserPage')
                 setTimeout(() => {
                   location.reload()
                 }, 500)
@@ -237,7 +233,7 @@ export default {
 
 
           }, reason => {
-            this.loginMessage = '账号或密码错误 code:' + reason.code
+            this.loginMessage = '手机号或密码错误 code:' + reason.code
             this.loginStatusFail = true
             this.loginStatusSuccess = false
             //改变动画样式

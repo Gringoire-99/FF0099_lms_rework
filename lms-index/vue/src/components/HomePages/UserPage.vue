@@ -12,20 +12,36 @@
           </el-header>
           <div class="hvr-border-fade">
             <el-main>
-              <el-form label-width="120px">
-                <el-form-item label="姓名">
-                  <el-input v-model="form.userName"/>
+
+              <el-form>
+                <el-form-item label="头像">
+                  <el-avatar :size="20" :src="user.avatarPic" />
+                </el-form-item>
+                <el-form-item label="用户名">
+                  <el-input v-model="user.userName"/>
                 </el-form-item>
                 <el-form-item label="性别">
-                  <el-select v-model="form.gender" placeholder="请选择你的性别">
+                  <el-select v-model="user.gender" placeholder="请选择你的性别">
                     <el-option label="男" value="male"/>
                     <el-option label="女" value="female"/>
                   </el-select>
                 </el-form-item>
+                <el-form-item label="邮箱">
+                  <el-input v-model="user.email"/>
+                </el-form-item>
+                <el-form-item label="手机号">
+                  <el-input v-model="user.phoneNumber"/>
+                </el-form-item>
+                <el-form-item label="余额">
+                  <el-tag class="ml-2" type="warning">{{user.balance}}</el-tag>
+                </el-form-item>
+                <el-form-item label="借阅数">
+                  <el-tag class="ml-2" >{{user.borrowNumber}}</el-tag>
+                </el-form-item>
                 <el-form-item label="出生日期">
                   <el-col :span="11">
                     <el-date-picker
-                        v-model="form.birthdate"
+                        v-model="user.birthdate"
                         placeholder="选择日期"
                         style="width: 100%"
                         type="date"
@@ -45,7 +61,7 @@
                   </el-col>
                 </el-form-item>
                 <el-form-item label="备注">
-                  <el-input v-model="form.remark" type="textarea"/>
+                  <el-input v-model="user.remark" type="textarea"/>
                 </el-form-item>
                 <el-form-item>
                   <el-popconfirm
@@ -162,7 +178,7 @@
                 欢迎使用<span style="color: #0794ff">LMS！</span><br>
               </h1>
               <span>
-                尊敬的用户：{{ userName }}
+                尊敬的用户：{{ user.userName }}
               </span>
             </div>
             <p></p>
@@ -179,11 +195,15 @@
 import {ElNotification} from 'element-plus'
 import axios from "axios";
 //待包装
-const checkData = function (data) {
-  console.log(data.userName);
-  if (data===null)return false
-  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(data.userName)){
+const checkData = function (user) {
+  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(user.userName)){
     return '姓名为空或包含非法字符'
+  }
+  if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(com|cn|net)$/.test(user.email)){
+    return '请输入合法邮箱'
+  }
+  if (!/^1[34578][0-9]{9}$/.test(user.phoneNumber)){
+    return '请输入合法手机'
   }
   return 'correct'
 
@@ -191,12 +211,16 @@ const checkData = function (data) {
 export default {
   data() {
     return {
-      form: {
+      user: {
         userName: '',
         userId: '',
         gender: '',
-        birthdate: '',
         remark: '',
+        email:'',
+        avatarPic:'',
+        balance:0,
+        phoneNumber:'',
+        borrowNumber:0
       },
       records: [],
       readingBook: {
@@ -213,21 +237,7 @@ export default {
   },
 
   computed: {
-    userName() {
-      return this.$store.state.user.userName
-    },
-    userId() {
-      return this.$store.state.user.userId
-    },
-    gender() {
-      return this.$store.state.user.gender
-    },
-    birthdate() {
-      return this.$store.state.user.birthdate
-    },
-    remark() {
-      return this.$store.state.user.remark
-    },
+
   },
   methods: {
     warningPopUp(message, title) {
@@ -253,52 +263,37 @@ export default {
     },
     updateUser() {
       let updateMsg=''
-     let user ={}
-      user.userName = this.form.userName
-      user.userId =this.form.userId
-      user.userPassword = null
-      user.gender = this.form.gender==='null'?null:this.form.gender
-      user.birthdate = this.form.birthdate==='null'?null:this.form.birthdate.toString()
-      user.remark = this.form.remark==='null'?null:this.form.remark
+     let user = this.user
       updateMsg = checkData(user)
       if (updateMsg !=='correct'){
         this.warningPopUp(updateMsg,'输入有误')
         return
       }
 
-      axios.post('/api/updateUser',user
+      axios.post('/api/user/update',user
       ).then(() => {
         this.successPopUp('数据已递交', '修改成功')
-        localStorage.setItem('userName', user.userName)
-        localStorage.setItem('gender', user.gender)
-        localStorage.setItem('remark', user.remark)
-        localStorage.setItem('birthdate', user.birthdate)
+
       }, () => {
         this.errorPopUp('网络未响应', '修改失败')
       })
     }
   }, mounted() {
     if (this.$store.state.isLogin) {
-      this.form.birthdate = this.birthdate
-      this.form.gender = this.gender
-      this.form.userName = this.userName
-      this.form.userId = this.userId
-      this.form.remark = this.remark
       //挂载时申请用户的详细数据
+      let userId = localStorage.getItem("userId")
       new Promise(() => {
-        axios.get('/api/getUserDetail', {
-          params: {
-            userId: this.form.userId
-          }
-        }).then(value => {
-          if (value.data.code !== 200) {
+        axios.get(`/api/user/info/${userId}`).then(value => {
+          if (value.data.code !== 0) {
             this.errorPopUp('获取时发生错误', '获取信息失败')
             return
           }
-          if (value.data.data !== null) {
-            this.records = value.data.data.records
-            this.readingBook = value.data.data.readingBook
-            this.returnDate = this.records[0].returnDate
+          if (value.data.user !== null) {
+            this.user = value.data.user;
+            console.log(this.user)
+            // this.records = value.data.data.records
+            // this.readingBook = value.data.data.readingBook
+            // this.returnDate = this.records[0].returnDate
           }
         }, reason => {
           this.errorPopUp(reason.code, '服务器未响应')

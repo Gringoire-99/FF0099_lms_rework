@@ -32,7 +32,7 @@
         prop="userId"
         header-align="center"
         align="center"
-        label="收藏人d">
+        label="收藏人id">
       </el-table-column>
       <el-table-column
         prop="url"

@@ -4,8 +4,8 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="收藏人d" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="收藏人d"></el-input>
+    <el-form-item label="收藏人id" prop="userId">
+      <el-input v-model="dataForm.userId" placeholder="收藏人id"></el-input>
     </el-form-item>
     <el-form-item label="收藏url" prop="url">
       <el-input v-model="dataForm.url" placeholder="收藏url"></el-input>
@@ -30,7 +30,7 @@
         },
         dataRule: {
           userId: [
-            { required: true, message: '收藏人d不能为空', trigger: 'blur' }
+            { required: true, message: '收藏人id不能为空', trigger: 'blur' }
           ],
           url: [
             { required: true, message: '收藏url不能为空', trigger: 'blur' }

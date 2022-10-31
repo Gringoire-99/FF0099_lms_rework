@@ -50,7 +50,7 @@ create table if not exists lms2.`user`
     `phone_number`  varchar(256)                     not null comment '手机号',
     `borrow_number` int          default 0           null comment '借阅数',
     `email`         varchar(256) default '未填写'    null comment '邮箱',
-    `avatar_pic`    varchar(256)                     null comment '头像',
+    `avatar_pic`    varchar(256)                   null comment '头像',
     `balance`       decimal      default 0           null comment '余额'
 ) comment '用户';
 

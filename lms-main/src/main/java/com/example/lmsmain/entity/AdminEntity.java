@@ -12,7 +12,7 @@ import lombok.Data;
  * 
  * @author gg
  * @email ggs@gmail.com
- * @date 2022-10-24 16:13:48
+ * @date 2022-10-31 12:39:08
  */
 @Data
 @TableName("admin")
@@ -37,7 +37,7 @@ public class AdminEntity implements Serializable {
 	 */
 	private String avatarPic;
 	/**
-	 * 密码
+	 * 
 	 */
 	private String password;
 

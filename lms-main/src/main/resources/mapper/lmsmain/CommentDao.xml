@@ -7,8 +7,6 @@
     <resultMap type="com.example.lmsmain.entity.CommentEntity" id="commentMap">
         <result property="content" column="content"/>
         <result property="userId" column="user_id"/>
-        <result property="userName" column="user_name"/>
-        <result property="avatarPic" column="avatar_pic"/>
         <result property="likes" column="likes"/>
         <result property="dislikes" column="dislikes"/>
         <result property="bookId" column="book_id"/>

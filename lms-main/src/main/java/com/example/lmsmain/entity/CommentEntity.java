@@ -12,7 +12,7 @@ import lombok.Data;
  * 
  * @author gg
  * @email ggs@gmail.com
- * @date 2022-10-24 16:13:48
+ * @date 2022-10-31 12:39:08
  */
 @Data
 @TableName("comment")
@@ -28,14 +28,6 @@ public class CommentEntity implements Serializable {
 	 */
 	@TableId
 	private Long userId;
-	/**
-	 * 评论用户名
-	 */
-	private String userName;
-	/**
-	 * 头像图片
-	 */
-	private String avatarPic;
 	/**
 	 * 点赞数
 	 */

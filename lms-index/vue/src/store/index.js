@@ -31,12 +31,7 @@ const state = {
         {name: 'meme', comment: "经典"},
     ],
     user: {
-        userName: '',
         userId: '',
-        gender: '',
-        role: '',
-        birthdate: '',
-        remark: ''
     },
     isLogin: false
 }
