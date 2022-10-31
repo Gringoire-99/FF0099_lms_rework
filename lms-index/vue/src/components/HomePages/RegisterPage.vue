@@ -171,6 +171,8 @@ export default {
     submit() {
       let registerMsg = ''
       let user = this.user
+      let password = user.password
+      let phoneNumber = user.phoneNumber
       registerMsg = checkData(user)
       if (registerMsg !== 'correct') {
         this.warningPopUp(registerMsg,'注册失败')
@@ -180,21 +182,31 @@ export default {
         return
       }
       new Promise((resolve, reject) => {
-        axios.post('/api/user/save',user).then(value => {
-          if (value.data.code!==200){
+        axios.post('/api/user/save',user).then(result => {
+          console.log(result)
+          if (result.data.code!==0){
             reject()
           }
-          resolve(value.data)
+          resolve(result.data)
         },reason => {
           this.errorPopUp(reason.code,'网络请求失败')
         })
       }).then(value => {
         this.successPopUp('即将跳转页面','注册成功')
-        this.$store.status.isLogin = true
-        this.$router.push('/UserPage')
-        setTimeout(()=>{
-          location.reload()
-        },500)
+        axios.get('/api/user/login', {
+          params: {
+            password,
+            phoneNumber
+          }
+        }).then(Response=>{
+          console.log(Response.data)
+          console.log(Response.data.user.userId)
+          localStorage.setItem('userId',Response.data.user.userId)
+        }).catch(reason => {
+          this.errorPopUp('服务器访问失败','请重新登录')
+        })
+        this.$store.state.isLogin = true
+
       },() => {
         this.errorPopUp('该用户已存在','注册失败')
       })

@@ -29,7 +29,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     @Override
     public UserEntity doLogin(Map<String, Object> params) {
         String password = (String) params.get("password");
-        String phone = (String) params.get("phone");
+        String phone = (String) params.get("phoneNumber");
         if (password!=null&&phone!=null){
             QueryWrapper<UserEntity> qw = new QueryWrapper<>();
             qw.eq("user.password",password);
@@ -38,5 +38,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         }
         return null;
     }
+
+
 
 }

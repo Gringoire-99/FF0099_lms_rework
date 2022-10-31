@@ -153,9 +153,9 @@ export default {
     submit() {
       //存在重复访问问题，需要添加请求拦截
       let timer;
-      let phone = this.form.phone;
+      let phoneNumber = this.form.phone;
       let password = this.form.password
-      if (phone.length === 0 || password.length === 0) {
+      if (phoneNumber.length === 0 || password.length === 0) {
         this.loginStatusFail = true
         this.loginStatusSuccess = false
         this.loginMessage = "手机或密码不能为空"
@@ -168,7 +168,7 @@ export default {
         }, 1500)
         axios.get('/api/user/login', {
           params: {
-            phone,
+            phoneNumber,
             password
           }
         }).then((Response => {
@@ -205,6 +205,7 @@ export default {
       }).
           //是否能登录到服务器
           then(data => {
+            console.log(data.user)
             localStorage.setItem('userId', data.user.userId)
             this.loginMessage = '登录成功 code:' + data.code
             this.loginStatusFail = false
@@ -223,9 +224,9 @@ export default {
                 this.showProgress = false
                 this.status = ''
                 this.progress = 0;
-                // this.$router.push('/UserPage')
+                this.$router.push('/UserPage')
                 setTimeout(() => {
-                  location.reload()
+                  // location.reload()
                 }, 500)
               }, 1000)
             })

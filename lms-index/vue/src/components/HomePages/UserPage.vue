@@ -199,7 +199,7 @@ const checkData = function (user) {
   if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(user.userName)){
     return '姓名为空或包含非法字符'
   }
-  if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(com|cn|net)$/.test(user.email)){
+  if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(com|cn|net)$/.test(user.email)&&user.email!=='未填写'){
     return '请输入合法邮箱'
   }
   if (!/^1[34578][0-9]{9}$/.test(user.phoneNumber)){
@@ -282,6 +282,7 @@ export default {
     if (this.$store.state.isLogin) {
       //挂载时申请用户的详细数据
       let userId = localStorage.getItem("userId")
+      console.log(userId)
       new Promise(() => {
         axios.get(`/api/user/info/${userId}`).then(value => {
           if (value.data.code !== 0) {

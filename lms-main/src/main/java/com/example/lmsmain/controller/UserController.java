@@ -1,21 +1,14 @@
 package com.example.lmsmain.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.example.lmsmain.entity.UserEntity;
+import com.example.lmsmain.service.UserService;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.lmsmain.entity.UserEntity;
-import com.example.lmsmain.service.UserService;
-
-
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -32,19 +25,20 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping("/login")
-    public R login(@RequestParam Map<String,Object> params){
+    public R login(@RequestParam Map<String, Object> params) {
         UserEntity user = userService.doLogin(params);
-        if (user!=null){
+        if (user != null) {
             user.setPassword(null);
-            return R.ok().put("user",user);
+            return R.ok().put("user", user);
         }
         return R.error("登录失败");
     }
+
     /**
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = userService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -55,8 +49,11 @@ public class UserController {
      * 信息
      */
     @RequestMapping("/info/{userId}")
-    public R info(@PathVariable("userId") Long userId){
-		UserEntity user = userService.getById(userId);
+    public R info(@PathVariable("userId") Long userId) {
+        UserEntity user = userService.getById(userId);
+        if (user==null){
+            return R.error("登陆失败");
+        }
         user.setPassword(null);
         return R.ok().put("user", user);
     }
@@ -65,18 +62,23 @@ public class UserController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody UserEntity user){
-		userService.save(user);
+    public R save(@RequestBody UserEntity user) {
+        try {
+            userService.save(user);
 
-        return R.ok();
+            return R.ok();
+        } catch (Exception e) {
+            return R.error("已注册");
+        }
     }
+
 
     /**
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody UserEntity user){
-		userService.updateById(user);
+    public R update(@RequestBody UserEntity user) {
+        userService.updateById(user);
 
         return R.ok();
     }
@@ -85,8 +87,8 @@ public class UserController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] userIds){
-		userService.removeByIds(Arrays.asList(userIds));
+    public R delete(@RequestBody Long[] userIds) {
+        userService.removeByIds(Arrays.asList(userIds));
 
         return R.ok();
     }
