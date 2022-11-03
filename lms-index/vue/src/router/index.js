@@ -10,6 +10,7 @@ import JoinUsPage from "@/components/StaticPages/JoinUsPage";
 import TeamPage from "@/components/StaticPages/TeamPage";
 import BookListPage from "@/components/BookPages/BookListPage";
 import BookRecordPage from "@/components/BookPages/BookRecordPage";
+import DetailPage from "@/components/BookPages/DetailPage";
 
 const routes = [
 
@@ -23,9 +24,6 @@ const routes = [
         name: 'UserPage',
         path: '/UserPage',
         component: UserPage,
-        meta: {
-            isAuth: true,
-        }
     },
     {
         name: 'LoginPage',
@@ -61,18 +59,19 @@ const routes = [
         name: 'BookListPage',
         path: '/BookListPage',
         component: BookListPage,
-        meta: {
-            isAuth: true,
-        }
+
+    },
+    {
+        name: 'DetailPage',
+        path: '/DetailPage',
+        component: DetailPage,
+
     },
     {
         name: 'BookRecordPage',
         path: '/BookRecordPage',
         component: BookRecordPage,
-        meta: {
-            isAuth: true,
-            isAdmin: true,
-        }
+
     }
 ]
 const router = createRouter({

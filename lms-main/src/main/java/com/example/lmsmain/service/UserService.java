@@ -1,6 +1,7 @@
 package com.example.lmsmain.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.lmsmain.entity.BorrowRecordEntity;
 import com.example.lmsmain.entity.UserEntity;
 import common.utils.PageUtils;
 
@@ -18,6 +19,6 @@ public interface UserService extends IService<UserEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     UserEntity doLogin(Map<String, Object> params);
-
+    void updateByRecord(BorrowRecordEntity borrowRecord, int borrowNumber);
 }
 

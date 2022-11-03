@@ -3,6 +3,7 @@ package com.example.lmsmain.controller;
 import com.example.lmsmain.entity.BorrowRecordEntity;
 import com.example.lmsmain.service.BorrowRecordService;
 import com.example.lmsmain.service.impl.BookServiceImpl;
+import com.example.lmsmain.service.impl.UserServiceImpl;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class BorrowRecordController {
     private BorrowRecordService borrowRecordService;
     @Autowired
     private BookServiceImpl bookService;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     /**
      * 列表
@@ -58,18 +62,18 @@ public class BorrowRecordController {
     @RequestMapping("/save")
     @Transactional
     public R save(@RequestBody BorrowRecordEntity borrowRecord) {
-        try {
-            bookService.updateByRecord(borrowRecord, -1);
-        } catch (Exception e) {
-            e.printStackTrace();
+//        检查库存
+        if (bookService.getById(borrowRecord.getBookId()).getNumber()<=0){
             return R.error("库存不足");
         }
-        try {
-            borrowRecordService.save(borrowRecord);
-
-        } catch (Exception e) {
-            return R.error("已借阅");
+//        检查是否已经借阅
+        if(borrowRecordService.getByIds(borrowRecord.getUserId(),borrowRecord.getBookId())!=null){
+            return R.error("已借阅!");
         }
+
+        bookService.updateByRecord(borrowRecord, 1);
+        userService.updateByRecord(borrowRecord,1);
+        borrowRecordService.save(borrowRecord);
 
         return R.ok("借阅成功");
     }
@@ -90,19 +94,19 @@ public class BorrowRecordController {
     @RequestMapping("/delete")
     @Transactional
     public R delete(@RequestBody BorrowRecordEntity borrowRecord) {
-        try {
+//        检查是否存在该记录
             if (borrowRecordService.getByIds(borrowRecord.getUserId(), borrowRecord.getBookId()) != null) {
                 if (borrowRecordService.deleteRecord(borrowRecord)) {
-                    bookService.updateByRecord(borrowRecord, 1);
+                    userService.updateByRecord(borrowRecord,-1);
+                    bookService.updateByRecord(borrowRecord, -1);
                     return R.ok("归还成功");
                 }
-            } else {
+            }
+            else {
                 return R.error("无此书借书记录");
             }
             return R.error("还书失败");
-        } catch (Exception e) {
-            return R.error();
-        }
+
     }
 
 }

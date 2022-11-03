@@ -207,6 +207,7 @@ export default {
           then(data => {
             console.log(data.user)
             localStorage.setItem('userId', data.user.userId)
+            this.$store.state.isLogin = true
             this.loginMessage = '登录成功 code:' + data.code
             this.loginStatusFail = false
             this.loginStatusSuccess = true

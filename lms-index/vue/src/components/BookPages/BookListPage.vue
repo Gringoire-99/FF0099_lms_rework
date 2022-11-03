@@ -4,7 +4,7 @@
       name="animate__animated "
       enter-active-class="animate__fadeInLeft"
       leave-active-class="animate__bounceOut">
-    <div>
+    <div v-show="this.$store.state.isLogin">
       <el-container>
         <el-header>
           <div class="h-6"/>
@@ -33,8 +33,12 @@
               <el-input
                   placeholder="请输入查找关键词"
                   v-model="keyWord"
+                  @keydown.enter="getDataList"
               ></el-input>
-              <el-button @click="getDataList" size="large" style="margin-left: 10px;margin-top: 7px">              <el-icon :size="25"><Search /></el-icon>
+              <el-button @click="getDataList" size="large" style="margin-left: 10px;margin-top: 7px">
+                <el-icon :size="25">
+                  <Search/>
+                </el-icon>
               </el-button>
               <el-select class="m-2" placeholder="Select" size="large" v-model="keyProp">
                 <el-option
@@ -56,7 +60,7 @@
 
           >
             <!--     折叠子面板      -->
-            <el-table-column  type="expand">
+            <el-table-column type="expand">
               <template #default="props">
                 <transition
                     appear
@@ -195,11 +199,11 @@
 
             <el-table-column fixed="right" label="借阅" width="120">
               <template #default="scope">
-                <el-button link type="primary" @click="handleBorrow(scope.$index, scope.row);"
+                <el-button link type="primary" @click="borrowBook(scope.row);"
                 >借阅
                 </el-button
                 >
-                <el-button link type="primary" @click="handleReturn(scope.$index, scope.row);"
+                <el-button link type="primary" @click="returnBook(scope.row)"
                 >还书
                 </el-button
                 >
@@ -294,6 +298,47 @@
             </el-descriptions>
           </el-drawer>
 
+          <el-dialog
+              v-model="returnDialogVisible"
+              title="请输入还书码"
+              width="30%"
+          >
+            <span>还书码</span>
+            <el-input v-model="returnInfo.returnCode"></el-input>
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="returnDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleReturnDialogConfirm">
+                  确定
+                </el-button>
+              </span>
+            </template>
+          </el-dialog>
+          <el-dialog
+              v-model="borrowDialogVisible"
+              title="借书信息 "
+              width="30%"
+          >
+            <span>借书码</span>
+            <p></p>
+            <el-input v-model="borrowInfo.borrowCode"></el-input>
+            <p></p>
+            <p>归还日期</p>
+            <el-date-picker
+                v-model="borrowInfo.returnDate"
+                type="datetime"
+                placeholder="Pick a Date"
+                value-format="YYYY-MM-DD hh:mm:ss"
+            />
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="borrowDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleBorrowDialogConfirm">
+                  确定
+                </el-button>
+              </span>
+            </template>
+          </el-dialog>
         </el-main>
         <el-footer>
           <el-pagination
@@ -328,7 +373,7 @@ const press = "出版社"
 const number = "库存"
 const readingNumber = "借阅数"
 const price = "价格"
-const props = [bookName,bookId,author,press,number,readingNumber,price]
+const props = [bookName, bookId, author, press, number, readingNumber, price]
 
 propMap.set(bookName, "book_name")
 propMap.set(bookId, "book_id")
@@ -341,17 +386,17 @@ export default {
   name: "BookListPage",
   data() {
     return {
-      isLoading :true,
+      isLoading: true,
       icon: {
         Search
       },
       pageIndex: 1,
       pageSize: 10,
       totalPage: 0,
-      dataList:[],
+      dataList: [],
       score: 0,
       scoreColors: ['#99A9BF', '#f68402', '#ff0026'],
-
+      comments : [],
       isOpenFilter: false,
       isOpenSearch: false,
       filters: {
@@ -385,49 +430,46 @@ export default {
       },
       keyWord: '',
       keyProp: '书名',
-      props
+      props,
+      returnDialogVisible: false,
+      borrowDialogVisible: false,
+      returnInfo: {
+        returnCode: "",
+        bookId: '',
+      },
+      borrowInfo: {
+        borrowCode: "",
+        bookId: '',
+        returnDate: '',
+        number: 0
+      }
     }
 
   },
-  computed: {
-    comments() {
-      //可能需要执行Ajax请求
-      return this.$store.state.comments
-    },
-    filterList() {
-      let bookList = this.$store.state.bookList
-      let keyProp = propMap.get(this.keyProp)
-      let keyWord = this.keyWord
-
-      let fl
-      fl = bookList.filter((book) => {
-        return book.bookPrice >= this.filters.price.lowest && book.bookPrice <= this.filters.price.highest
-            && book.bookNumber >= this.filters.bookNumber.lowest && book.bookNumber <= this.filters.bookNumber.highest
-            && book.borrowNumber >= this.filters.borrowNumber.lowest && book.borrowNumber <= this.filters.borrowNumber.highest
-      });
-
-      fl = fl.filter((book) => ("" + book[keyProp]).indexOf(keyWord) !== -1)
-
-
-      return fl;
-    },
-    pageList() {
-      let currentPage = this.pageIndex
-      let pageSize = this.pageSize
-      let start = (currentPage - 1) * pageSize
-      let end = currentPage * pageSize - 1
-      let fl = this.filterList
-      fl = fl.slice(start, end)
-      return fl
-    },
-    total() {
-      return this.filterList.length
-    },
-    isAuth() {
-      return this.$store.state.user.role === 'admin'
-    }
-  },
+  computed: {},
   methods: {
+    returnBook(row) {
+      this.returnDialogVisible = true
+      this.returnInfo.bookId = row.bookId
+    },
+    handleReturnDialogConfirm() {
+      this.returnDialogVisible = false
+      this.handleReturn()
+    },
+    borrowBook(row) {
+      this.borrowDialogVisible = true
+      this.borrowInfo.bookId = row.bookId
+      this.borrowInfo.number = row.number
+    },
+    handleBorrowDialogConfirm() {
+      this.borrowDialogVisible = false
+
+      if (Date.parse(this.borrowInfo.returnDate) < Date.parse(this.$currentDateTime)){
+        this.$errorPopUp("还书时间错误","失败")
+        return
+      }
+      this.handleBorrow()
+    },
     sizeChangeHandle(val) {
       this.pageSize = val
       this.currentPage = 1
@@ -468,90 +510,63 @@ export default {
         },
       }
     },
-    handleBorrow(index, row) {
-      if (row.number<=0){
-        this.$errorPopUp("没有库存","无法借出")
+    handleBorrow() {
+      if (this.borrowInfo.number <= 0) {
+        this.$errorPopUp("没有库存", "无法借出")
         return
       }
-      let d = ElMessageBox.confirm(
-          '要借阅这本书吗?',
-          '询问',
-          {
-            confirmButtonText: '是的',
-            cancelButtonText: '算了',
-            type: 'info',
-          }
-      ).then((value) => {
-        let borrowTime =  this.$currentDateTime()
-        let returnTime = this.$returnDateTime(borrowTime)
-        let borrowRecord = {
-          bookId: row.bookId,
-          userId: this.$store.state.user.userId,
-          borrowTime,
-          returnTime
-        }
-        new Promise((resolve, reject) => {
-          axios.post('/api/borrowrecord/save',  borrowRecord).then(value => {
+      let borrowTime = this.$currentDateTime()
 
-            if (value.data.code !== 0) {
-              this.$errorPopUp(value.data.msg,'借阅失败')
-              return
-            }
-            this.$successPopUp(value.data.msg,'借阅成功')
-            this.getDataList()
-          }, reason => {
-            this.$errorPopUp(reason.data.msg, '借阅失败')
-          })
-        })
+      let returnTime
+      if (this.borrowInfo.returnDate&&this.borrowInfo.returnDate!==""){
+        returnTime = this.borrowInfo.returnDate
+      }else{
+        returnTime = this.$returnDateTime(borrowTime)
+      }
+      let borrowRecord = {
+        bookId: this.borrowInfo.bookId,
+        userId: this.$store.state.user.userId,
+        borrowTime,
+        returnTime
+      }
+      axios.post('/api/borrowrecord/save', borrowRecord).then(value => {
+
+        if (value.data.code !== 0) {
+          this.$errorPopUp(value.data.msg, '借阅失败')
+          return
+        }
+        this.$successPopUp(value.data.msg, '借阅成功')
+        this.getDataList()
       }, reason => {
-        ElMessage({
-          type: 'info',
-          message: '取消借阅',
-        })
+        this.$errorPopUp(reason.data.msg, '借阅失败')
       })
+
     },
-    handleReturn(index, row) {
-      //实际需要引入密钥
-      let d = ElMessageBox.confirm(
-          '要归还这本书吗?',
-          '询问',
-          {
-            confirmButtonText: '是的',
-            cancelButtonText: '算了',
-            type: 'info',
-          }
-      ).then((value) => {
-        let userId = this.$store.state.user.userId
-        let bookId = row.bookId
-        new Promise((resolve, reject) => {
-          axios.post('/api/borrowrecord/delete', {
-              userId,
-              bookId,
-          }).then(value => {
-            console.log(value.data.code)
-            if (value.data.code !== 0) {
-             this.$errorPopUp(value.data.msg,"归还失败")
-              return
-            }
-            this.$successPopUp(value.data.msg,"归还成功")
-          }, reason => {
-            this.$errorPopUp("网络异常", '归还失败')
-          })
-        })
+    handleReturn() {
+      let bookId = this.returnInfo.bookId
+      let userId = this.$store.state.user.userId
+      axios.post('/api/borrowrecord/delete', {
+        userId,
+        bookId,
+      }).then(value => {
+        if (value.data.code !== 0) {
+          this.$errorPopUp(value.data.msg, "归还失败")
+          return
+        }
+        this.$successPopUp(value.data.msg, "归还成功")
+        this.getDataList()
       }, reason => {
-        ElMessage({
-          type: 'info',
-          message: '取消还书',
-        })
+        this.$errorPopUp("网络异常", '归还失败')
       })
+
     },
-    getDataList () {
+    getDataList() {
       let limit = this.pageSize
       let page = this.pageIndex
       let key = this.keyWord
       let prop = propMap.get(this.keyProp)
-      axios.get(`/api/book/list`,{
-        params:{
+      axios.get(`/api/book/list`, {
+        params: {
           limit,
           page,
           key,

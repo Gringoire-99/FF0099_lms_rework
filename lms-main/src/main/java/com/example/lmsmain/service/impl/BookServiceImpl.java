@@ -39,12 +39,12 @@ public class BookServiceImpl extends ServiceImpl<BookDao, BookEntity> implements
         return new PageUtils(page);
     }
 
-    public void updateByRecord(BorrowRecordEntity borrowRecord, Integer number) {
+    public void updateByRecord(BorrowRecordEntity borrowRecord, Integer borrowNumber) {
         LambdaQueryWrapper<BookEntity> lqw = new LambdaQueryWrapper<>();
         lqw.eq(BookEntity::getBookId,borrowRecord.getBookId());
         BookEntity book = this.getById(borrowRecord.getBookId());
-        book.setNumber(book.getNumber() + number);
-        book.setReadingNumber(book.getReadingNumber() - number);
+        book.setNumber(book.getNumber() - borrowNumber);
+        book.setReadingNumber(book.getReadingNumber() + borrowNumber);
         this.update(book, lqw);
     }
 

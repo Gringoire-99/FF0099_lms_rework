@@ -1,6 +1,8 @@
 package com.example.lmsmain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.example.lmsmain.entity.BookEntity;
+import com.example.lmsmain.entity.BorrowRecordEntity;
 import common.utils.PageUtils;
 import common.utils.Query;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,11 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     }
 
 
-
+    public void updateByRecord(BorrowRecordEntity borrowRecord, int borrowNumber) {
+        LambdaQueryWrapper<UserEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(UserEntity::getUserId,borrowRecord.getUserId());
+        UserEntity  user= this.getById(borrowRecord.getUserId());
+        user.setBorrowNumber(user.getBorrowNumber() + borrowNumber);
+        this.update(user, lqw);
+    }
 }
