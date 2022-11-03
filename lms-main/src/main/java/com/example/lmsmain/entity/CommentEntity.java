@@ -27,7 +27,7 @@ public class CommentEntity implements Serializable {
 	 * 评论用户id
 	 */
 	@TableId
-	private Long userId;
+	private String userId;
 	/**
 	 * 点赞数
 	 */

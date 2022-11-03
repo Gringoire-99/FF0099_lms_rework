@@ -1,5 +1,6 @@
 package com.example.lmsmain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import common.utils.PageUtils;
 import common.utils.Query;
 import org.springframework.stereotype.Service;
@@ -31,10 +32,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         String password = (String) params.get("password");
         String phone = (String) params.get("phoneNumber");
         if (password!=null&&phone!=null){
-            QueryWrapper<UserEntity> qw = new QueryWrapper<>();
-            qw.eq("user.password",password);
-            qw.eq("user.phone_number",phone);
-            return baseMapper.selectOne(qw);
+            LambdaQueryWrapper<UserEntity> lqw = new LambdaQueryWrapper<>();
+            lqw.eq(UserEntity::getPassword,password);
+            lqw.eq(UserEntity::getPhoneNumber,phone);
+            return baseMapper.selectOne(lqw);
         }
         return null;
     }

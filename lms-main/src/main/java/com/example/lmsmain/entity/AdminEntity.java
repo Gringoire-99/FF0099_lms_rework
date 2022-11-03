@@ -27,7 +27,7 @@ public class AdminEntity implements Serializable {
 	 * id
 	 */
 	@TableId
-	private Long adminId;
+	private String adminId;
 	/**
 	 * 电话
 	 */

@@ -270,27 +270,14 @@ export default {
       this.showDetail = false
 
     },
-    warningPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'warning',
-      })
-    },
-    successPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'success',
-      })
-    }
+
 
   },
   mounted() {
     if (this.isLogin) {
-      this.successPopUp('您已登录，是否要退出登录？', '已登录')
+      this.$successPopUp('您已登录，是否要退出登录？', '已登录')
     } else {
-      this.warningPopUp('您还未登录请先登录', '未登录')
+      this.$warningPopUp('您还未登录请先登录', '未登录')
     }
   }
 

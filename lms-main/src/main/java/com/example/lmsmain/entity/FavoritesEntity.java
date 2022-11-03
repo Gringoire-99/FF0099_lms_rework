@@ -23,11 +23,11 @@ public class FavoritesEntity implements Serializable {
 	 * 收藏书id
 	 */
 	@TableId
-	private Long bookId;
+	private String bookId;
 	/**
 	 * 收藏人id
 	 */
-	private Long userId;
+	private String userId;
 	/**
 	 * 收藏url
 	 */

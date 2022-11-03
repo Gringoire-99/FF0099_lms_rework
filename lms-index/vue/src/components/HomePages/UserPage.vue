@@ -6,16 +6,17 @@
           enter-active-class="animate__bounceIn"
           name="animate__animated"
       >
-        <el-container>
+        <el-container
+        >
           <el-header class="hvr-fade">
             <h4>我的信息</h4>
           </el-header>
           <div class="hvr-border-fade">
-            <el-main>
+            <el-main v-loading="isLoadingUser">
 
               <el-form>
                 <el-form-item label="头像">
-                  <el-avatar :size="20" :src="user.avatarPic" />
+                  <el-avatar :size="20" :src="user.avatarPic"/>
                 </el-form-item>
                 <el-form-item label="用户名">
                   <el-input v-model="user.userName"/>
@@ -33,10 +34,10 @@
                   <el-input v-model="user.phoneNumber"/>
                 </el-form-item>
                 <el-form-item label="余额">
-                  <el-tag class="ml-2" type="warning">{{user.balance}}</el-tag>
+                  <el-tag class="ml-2" type="warning">{{ user.balance }}</el-tag>
                 </el-form-item>
                 <el-form-item label="借阅数">
-                  <el-tag class="ml-2" >{{user.borrowNumber}}</el-tag>
+                  <el-tag class="ml-2">{{ user.borrowNumber }}</el-tag>
                 </el-form-item>
                 <el-form-item label="出生日期">
                   <el-col :span="11">
@@ -98,42 +99,61 @@
                 图书借阅
               </h4>
             </el-header>
-            <el-main class="hvr-border-fade">
+            <el-main v-loading="isLoadingRecords" class="hvr-border-fade">
               <el-collapse>
-                <el-collapse-item name="1" title="正在读">
-                  <div>
-                    <el-descriptions :column="3" border>
-                      <el-descriptions-item
-                          align="center"
-                          class-name="my-content"
-                          label="书名"
-                          label-align="right"
-                          label-class-name="my-label"
-                          width="150px"
-                      >{{ readingBook.bookName }}
-                      </el-descriptions-item
-                      >
-                      <el-descriptions-item align="center" label="图书编号" label-align="right"
-                      >{{ readingBook.bookId }}
-                      </el-descriptions-item
-                      >
-                      <el-descriptions-item align="center" label="作者" label-align="right"
-                      >{{ readingBook.bookAuthor }}
-                      </el-descriptions-item
-                      >
-                      <el-descriptions-item align="center" label="还书时间" label-align="right">
-                        <el-tag size="small">{{ returnDate }}</el-tag>
-                      </el-descriptions-item>
-                      <el-descriptions-item align="center" label="描述" label-align="right"
-                      >{{ readingBook.remark }}
-                      </el-descriptions-item
-                      >
-                      <el-descriptions-item align="center" label="出版社" label-align="right"
-                      >{{ readingBook.press }}
-                      </el-descriptions-item
-                      >
-                    </el-descriptions>
-                  </div>
+                <el-collapse-item name="1" title="借阅记录">
+                  <el-table :data="records" :border="true" :stripe="true"
+                            :row-style="rowState">
+                    <el-table-column :show-overflow-tooltip="true" label="书号" prop="bookId"></el-table-column>
+                    <el-table-column :show-overflow-tooltip="true" label="借阅时间" prop="borrowTime"></el-table-column>
+                    <el-table-column :show-overflow-tooltip="true" label="还书时间" prop="returnTime"></el-table-column>
+                    <el-table-column type="expand">
+                      <template #default="props">
+                        <el-descriptions :column="3" border>
+                          <el-descriptions-item
+                              align="center"
+                              class-name="my-content"
+                              label="书名"
+                              label-align="right"
+                              label-class-name="my-label"
+                          >{{ books[props.$index].bookName }}
+                          </el-descriptions-item
+                          >
+                          <el-descriptions-item align="center" label="图书编号" label-align="right"
+                          >{{ books[props.$index].bookId }}
+                          </el-descriptions-item
+                          >
+                          <el-descriptions-item align="center" label="作者" label-align="right"
+                          >{{ books[props.$index].author }}
+                          </el-descriptions-item
+                          >
+                          <el-descriptions-item align="center" label="还书时间" label-align="right">
+                            <el-tag size="small">{{ props.row.returnTime }}</el-tag>
+                          </el-descriptions-item>
+                          <el-descriptions-item align="center" label="摘要" label-align="right"
+                          >{{ books[props.$index].summary }}
+                          </el-descriptions-item
+                          >
+                          <el-descriptions-item align="center" label="出版社" label-align="right"
+                          >{{ books[props.$index].press }}
+                          </el-descriptions-item
+                          >
+                        </el-descriptions>
+                      </template>
+
+                    </el-table-column>
+                  </el-table>
+                  <el-pagination
+                      :small="true"
+                      @size-change="sizeChangeHandle"
+                      @current-change="currentChangeHandle"
+                      v-model:currentPage="pageIndex"
+                      v-model:page-size="pageSize"
+                      :page-sizes="[5,10,20,40]"
+                      :background="true"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="totalPage"
+                  />
                 </el-collapse-item>
                 <el-collapse-item name="2" title="收藏图书">
                   <div>
@@ -194,15 +214,15 @@
 <script>
 import {ElNotification} from 'element-plus'
 import axios from "axios";
-//待包装
+
 const checkData = function (user) {
-  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(user.userName)){
+  if (!/^[\u4E00-\u9FA5A-Za-z\d_ ]+$/.test(user.userName)) {
     return '姓名为空或包含非法字符'
   }
-  if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(com|cn|net)$/.test(user.email)&&user.email!=='未填写'){
+  if (!/^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.(com|cn|net)$/.test(user.email) && user.email !== '未填写') {
     return '请输入合法邮箱'
   }
-  if (!/^1[34578][0-9]{9}$/.test(user.phoneNumber)){
+  if (!/^1[34578][0-9]{9}$/.test(user.phoneNumber)) {
     return '请输入合法手机'
   }
   return 'correct'
@@ -216,13 +236,14 @@ export default {
         userId: '',
         gender: '',
         remark: '',
-        email:'',
-        avatarPic:'',
-        balance:0,
-        phoneNumber:'',
-        borrowNumber:0
+        email: '',
+        avatarPic: '',
+        balance: 0,
+        phoneNumber: '',
+        borrowNumber: 0
       },
       records: [],
+      books: [],
       readingBook: {
         bookAuthor: '',
         bookId: '',
@@ -232,77 +253,129 @@ export default {
         press: '',
         remark: '',
       },
-      returnDate: ''
+      returnDate: '',
+      isLoadingUser: true,
+      isLoadingRecords: true
+      , pageIndex: 1,
+      pageSize: 5,
+      totalPage: 0,
     }
-  },
-
-  computed: {
 
   },
+
+  computed: {},
   methods: {
-    warningPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'warning',
-      })
+    sizeChangeHandle(val) {
+      this.pageSize = val
+      this.currentPage = 1
+      this.getRecords()
     },
-    errorPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'error',
-      })
-    },
-    successPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'success',
-      })
+    // 当前页
+    currentChangeHandle(val) {
+      this.currentPage = val
+      this.getRecords()
     },
     updateUser() {
-      let updateMsg=''
-     let user = this.user
+      let updateMsg = ''
+      let user = this.user
       updateMsg = checkData(user)
-      if (updateMsg !=='correct'){
-        this.warningPopUp(updateMsg,'输入有误')
+      if (updateMsg !== 'correct') {
+        this.$warningPopUp(updateMsg, '输入有误')
         return
       }
 
-      axios.post('/api/user/update',user
+      axios.post('/api/user/update', user
       ).then(() => {
-        this.successPopUp('数据已递交', '修改成功')
+        this.$successPopUp('数据已递交', '修改成功')
 
       }, () => {
-        this.errorPopUp('网络未响应', '修改失败')
+        this.$errorPopUp('网络未响应', '修改失败')
       })
-    }
-  }, mounted() {
-    if (this.$store.state.isLogin) {
-      //挂载时申请用户的详细数据
-      let userId = localStorage.getItem("userId")
-      console.log(userId)
-      new Promise(() => {
+    },
+    getUserData() {
+      this.isLoadingUser = true
+      if (this.$store.state.isLogin) {
+        //挂载时申请用户的详细数据
+        let userId = localStorage.getItem("userId")
         axios.get(`/api/user/info/${userId}`).then(value => {
           if (value.data.code !== 0) {
-            this.errorPopUp('获取时发生错误', '获取信息失败')
+            this.$errorPopUp('获取时发生错误', '获取信息失败')
             return
           }
           if (value.data.user !== null) {
             this.user = value.data.user;
-            console.log(this.user)
-            // this.records = value.data.data.records
-            // this.readingBook = value.data.data.readingBook
-            // this.returnDate = this.records[0].returnDate
+            this.isLoadingUser = false
+
           }
         }, reason => {
-          this.errorPopUp(reason.code, '服务器未响应')
+          this.$errorPopUp(reason.code, '服务器未响应')
         })
-
+      }
+    },
+    getRecords() {
+      this.isLoadingRecords = true
+      let limit = this.pageSize
+      let page = this.pageIndex
+      if (this.$store.state.isLogin) {
+        //挂载时获取用户的借书记录
+        let userId = localStorage.getItem("userId")
+        axios.get(`/api/borrowrecord/getRecords`, {
+          params: {
+            limit,
+            page,
+            userId
+          }
+        }).then(({data}) => {
+          console.log(data.page)
+          if (data && data.code === 0) {
+            this.records = data.page.list
+            this.getBooks(data.page.list)
+            this.totalPage = data.page.totalCount
+            this.isLoadingRecords = false
+          } else {
+            this.$errorPopUp('获取时发生错误', '获取信息失败')
+            this.records = []
+            this.totalPage = 0
+          }
+        }, reason => {
+          this.$errorPopUp(reason.code, '服务器未响应')
+        })
+      }
+    },
+    getBooks(records) {
+      axios.post(`/api/book/getBooksByRecord`,
+          records
+      ).then(({data}) => {
+        if (data && data.code === 0) {
+          this.books = data.list
+          this.isLoadingRecords = false
+        } else {
+          this.books = []
+          this.$errorPopUp('获取时发生错误', '获取信息失败')
+        }
+      }, reason => {
+        this.$errorPopUp(reason.code, '服务器未响应')
       })
+    },
+    rowState({row}) {
+      let twoDayTS = Date.parse(new Date("1970-01-03 00:00:00").toString())
+      let now = Date.parse(new Date(this.$currentDateTime()).toString())
+      let returnTime = Date.parse(new Date(row.returnTime).toString())
+      if (returnTime < now) {
+        return 'color:red'
+      } else if (now+twoDayTS>=returnTime){
+        return 'color:#f47920'
+      }
+      return '';
     }
 
+  }, mounted() {
+    this.getUserData()
+    this.getRecords()
+  },
+  activated() {
+
+    this.getUserData()
   }
 
 }

@@ -1,21 +1,15 @@
 package com.example.lmsmain.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.example.lmsmain.entity.BorrowRecordEntity;
+import com.example.lmsmain.service.BorrowRecordService;
+import com.example.lmsmain.service.impl.BookServiceImpl;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.lmsmain.entity.BorrowRecordEntity;
-import com.example.lmsmain.service.BorrowRecordService;
-
-
+import java.util.Map;
 
 
 /**
@@ -30,25 +24,31 @@ import com.example.lmsmain.service.BorrowRecordService;
 public class BorrowRecordController {
     @Autowired
     private BorrowRecordService borrowRecordService;
+    @Autowired
+    private BookServiceImpl bookService;
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = borrowRecordService.queryPage(params);
 
         return R.ok().put("page", page);
     }
 
+    @RequestMapping("/getRecords")
+    public R getRecords(@RequestParam Map<String, Object> params) {
+        PageUtils recordsById = borrowRecordService.getRecordsById(params);
+        return R.ok().put("page", recordsById);
+        }
 
     /**
      * 信息
      */
-    @RequestMapping("/info/{userId}")
-    public R info(@PathVariable("userId") Long userId){
-		BorrowRecordEntity borrowRecord = borrowRecordService.getById(userId);
-
+    @RequestMapping("/info/{userId}/{bookId}")
+    public R info(@PathVariable("userId") String userId, @PathVariable("bookId") String bookId) {
+        BorrowRecordEntity borrowRecord = borrowRecordService.getByIds(userId, bookId);
         return R.ok().put("borrowRecord", borrowRecord);
     }
 
@@ -56,18 +56,30 @@ public class BorrowRecordController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody BorrowRecordEntity borrowRecord){
-		borrowRecordService.save(borrowRecord);
+    @Transactional
+    public R save(@RequestBody BorrowRecordEntity borrowRecord) {
+        try {
+            bookService.updateByRecord(borrowRecord, -1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return R.error("库存不足");
+        }
+        try {
+            borrowRecordService.save(borrowRecord);
 
-        return R.ok();
+        } catch (Exception e) {
+            return R.error("已借阅");
+        }
+
+        return R.ok("借阅成功");
     }
 
     /**
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody BorrowRecordEntity borrowRecord){
-		borrowRecordService.updateById(borrowRecord);
+    public R update(@RequestBody BorrowRecordEntity borrowRecord) {
+        borrowRecordService.updateById(borrowRecord);
 
         return R.ok();
     }
@@ -76,10 +88,21 @@ public class BorrowRecordController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] userIds){
-		borrowRecordService.removeByIds(Arrays.asList(userIds));
-
-        return R.ok();
+    @Transactional
+    public R delete(@RequestBody BorrowRecordEntity borrowRecord) {
+        try {
+            if (borrowRecordService.getByIds(borrowRecord.getUserId(), borrowRecord.getBookId()) != null) {
+                if (borrowRecordService.deleteRecord(borrowRecord)) {
+                    bookService.updateByRecord(borrowRecord, 1);
+                    return R.ok("归还成功");
+                }
+            } else {
+                return R.error("无此书借书记录");
+            }
+            return R.error("还书失败");
+        } catch (Exception e) {
+            return R.error();
+        }
     }
 
 }

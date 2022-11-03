@@ -330,27 +330,7 @@ export default {
     closeAdd() {
       this.isOpenAdd = false
     },
-    warningPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'error',
-      })
-    },
-    successPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'success',
-      })
-    },
-    errorPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'error',
-      })
-    },handleModify(index, row) {
+   handleModify(index, row) {
       this.modify.bookId.oldVal = this.modify.bookId.newVal = row.borrowBookId
       this.modify.userId.oldVal = this.modify.userId.newVal = row.borrowUserId
       this.modify.returnDate.oldVal = this.modify.returnDate.newVal = row.returnDate
@@ -362,7 +342,7 @@ export default {
 
       //判断检查信息，发送弹窗
       if (msg !== "correct") {
-        this.warningPopUp(msg, "修改失败")
+        this.$warningPopUp(msg, "修改失败")
         return
       }
       let record = {
@@ -380,34 +360,25 @@ export default {
           }
           resolve()
         }, reason => {
-          this.errorPopUp('网络异常', '更新失败')
+          this.$errorPopUp('网络异常', '更新失败')
         })
       }).then(value => {
-        this.successPopUp('数据已更新！', '更新成功')
+        this.$successPopUp('数据已更新！', '更新成功')
         this.request()
         this.closeModify()
       }, reason => {
-        this.errorPopUp('数据更新时出现异常', '更新失败')
+        this.$errorPopUp('数据更新时出现异常', '更新失败')
       })
 
       //合法数据将发送给服务器，进行下一步判断
 
-    },
-    request() {
-      new Promise(() => {
-        axios.get('/api/getAllRecord').then(value => {
-          this.$store.commit('UPDATE_BOOK_RECORD', value.data.data)
-        }, () => {
-          this.errorPopUp('数据请求失败', '网络异常')
-        })
-      })
     },
     submitAdd() {
       //检验数据完整性
       let msg = checkData(this.add)
       //判断检查信息，发送弹窗
       if (msg !== "correct") {
-        this.warningPopUp(msg, "修改失败")
+        this.$warningPopUp(msg, "修改失败")
         return
       }
       let record = {
@@ -424,14 +395,14 @@ export default {
           }
           resolve()
         }, reason => {
-          this.errorPopUp('网络异常', '添加失败')
+          this.$errorPopUp('网络异常', '添加失败')
         })
       }).then(value => {
-        this.successPopUp('数据已更新！', '添加成功')
+        this.$successPopUp('数据已更新！', '添加成功')
         this.request()
         this.closeAdd()
       }, reason => {
-        this.errorPopUp('数据添加时出现异常（该记录可能已存在！）', '添加失败')
+        this.$errorPopUp('数据添加时出现异常（该记录可能已存在！）', '添加失败')
       })
       //合法数据将发送给服务器，进行下一步判断
       this.closeModify()
@@ -461,13 +432,13 @@ export default {
             }
             resolve()
           }, reason => {
-            this.errorPopUp("网络异常", '删除失败')
+            this.$errorPopUp("网络异常", '删除失败')
           })
         }).then(value1 => {
-          this.successPopUp('数据已更新', '删除成功')
+          this.$successPopUp('数据已更新', '删除成功')
           this.request()
         }, reason => {
-          this.errorPopUp('删除失败（可能存在依赖）', '删除失败')
+          this.$errorPopUp('删除失败（可能存在依赖）', '删除失败')
         })
       }, reason => {
         ElMessage({

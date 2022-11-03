@@ -175,7 +175,7 @@ export default {
       let phoneNumber = user.phoneNumber
       registerMsg = checkData(user)
       if (registerMsg !== 'correct') {
-        this.warningPopUp(registerMsg,'注册失败')
+        this.$warningPopUp(registerMsg,'注册失败')
         this.registerMessage = registerMsg
         this.registerFailStatus = true
         this.registerSuccessStatus =false
@@ -189,10 +189,10 @@ export default {
           }
           resolve(result.data)
         },reason => {
-          this.errorPopUp(reason.code,'网络请求失败')
+          this.$errorPopUp(reason.code,'网络请求失败')
         })
       }).then(value => {
-        this.successPopUp('即将跳转页面','注册成功')
+        this.$successPopUp('即将跳转页面','注册成功')
         axios.get('/api/user/login', {
           params: {
             password,
@@ -203,35 +203,14 @@ export default {
           console.log(Response.data.user.userId)
           localStorage.setItem('userId',Response.data.user.userId)
         }).catch(reason => {
-          this.errorPopUp('服务器访问失败','请重新登录')
+          this.$errorPopUp('服务器访问失败','请重新登录')
         })
         this.$store.state.isLogin = true
 
       },() => {
-        this.errorPopUp('该用户已存在','注册失败')
+        this.$errorPopUp('该用户已存在','注册失败')
       })
 
-    },
-    warningPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'warning',
-      })
-    },
-    errorPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'error',
-      })
-    },
-    successPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'success',
-      })
     },
   },
 }

@@ -46,6 +46,8 @@ public class Constant {
      * 升序
      */
     public static final String ASC = "asc";
+    public static final String KEY_WORD = "key";
+    public static final String PROPERTY = "prop";
 
     /**
      * 菜单类型

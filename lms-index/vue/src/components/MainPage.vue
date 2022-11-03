@@ -170,57 +170,17 @@ export default {
         query: {}
       })
     },
-    warningPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'warning',
-      })
-    },
-    successPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'success',
-      })
-    },
-    errorPopUp(message, title) {
-      ElNotification({
-        title,
-        message,
-        type: 'error',
-      })
-    },
-    requestBookList() {
-      new Promise(() => {
-        axios.get('/api/getAllBooks').then(value => {
-          this.$store.commit('UPDATE_BOOK_LIST', value.data.data)
-        }, () => {
-          this.errorPopUp('图书数据请求失败', '网络异常')
-        })
-      })
-    },
-    requestBookRecord() {
-      new Promise(() => {
-        axios.get('/api/getAllRecord').then(value => {
-          this.$store.commit('UPDATE_BOOK_RECORD', value.data.data)
-        }, () => {
-          this.errorPopUp('借阅数据请求失败', '网络异常')
-        })
-      })
-    },
+
 
   },
   mounted() {
-    this.requestBookList()
-    this.requestBookRecord();
     //在页面加载时，判断用户权限（游客，用户，管理员），在后端读取用户信息，初始化用户信息
-    let name = localStorage.getItem('userId')
-    if (name != null) {
+    let userId = localStorage.getItem('userId')
+    if (userId != null) {
       this.$store.state.isLogin = true
       this.$store.state.user.userId = localStorage.getItem('userId')
     } else {
-      this.warningPopUp('您还未登录，仅能访问部分资源', '未登录')
+      this.$warningPopUp('您还未登录，仅能访问部分资源', '未登录')
     }
   }
 

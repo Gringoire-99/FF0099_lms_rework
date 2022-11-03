@@ -95,11 +95,13 @@
         label="摘要">
       </el-table-column>
       <el-table-column
-        prop="coverPic"
         header-align="center"
         align="center"
         label="图片的url地址">
+        <template slot-scope="scope">
+      </template>
       </el-table-column>
+
       <el-table-column
         fixed="right"
         header-align="center"

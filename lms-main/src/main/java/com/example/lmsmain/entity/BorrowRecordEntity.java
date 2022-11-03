@@ -23,18 +23,18 @@ public class BorrowRecordEntity implements Serializable {
 	 * 用户id
 	 */
 	@TableId
-	private Long userId;
+	private String userId;
 	/**
 	 * 图书id
 	 */
-	private Long bookId;
+	private String bookId;
 	/**
 	 * 借书时间
 	 */
-	private Date borrowTime;
+	private String borrowTime;
 	/**
 	 * 还书时间
 	 */
-	private Long returnTime;
+	private String returnTime;
 
 }

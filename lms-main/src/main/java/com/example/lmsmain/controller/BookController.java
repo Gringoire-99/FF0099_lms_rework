@@ -1,6 +1,7 @@
 package com.example.lmsmain.controller;
 
 import com.example.lmsmain.entity.BookEntity;
+import com.example.lmsmain.entity.BorrowRecordEntity;
 import com.example.lmsmain.service.BookService;
 import common.utils.PageUtils;
 import common.utils.R;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 
@@ -34,6 +36,11 @@ public class BookController {
         return R.ok().put("page", page);
     }
 
+    @RequestMapping("/getBooksByRecord")
+    public R getBooksByRecord(@RequestBody List<BorrowRecordEntity> records) {
+        List<BookEntity> books = bookService.getBooksByRecord(records);
+        return R.ok().put("list",books);
+    }
 
     /**
      * 信息

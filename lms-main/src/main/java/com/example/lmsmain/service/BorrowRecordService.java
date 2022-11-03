@@ -16,5 +16,11 @@ import java.util.Map;
 public interface BorrowRecordService extends IService<BorrowRecordEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    boolean deleteRecord(BorrowRecordEntity borrowRecord);
+
+    BorrowRecordEntity getByIds(String userId, String bookId);
+
+    PageUtils getRecordsById(Map<String,Object> params);
 }
 

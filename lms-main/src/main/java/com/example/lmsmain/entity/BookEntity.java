@@ -25,7 +25,7 @@ public class BookEntity implements Serializable {
      * 书号
      */
     @TableId
-    private Long bookId;
+    private String bookId;
     /**
      * 是否删除(0-未删, 1-已删)
      */
@@ -38,7 +38,7 @@ public class BookEntity implements Serializable {
     /**
      * 库存数量
      */
-    private String number;
+    private Long number;
     /**
      * 正在阅读数
      */
