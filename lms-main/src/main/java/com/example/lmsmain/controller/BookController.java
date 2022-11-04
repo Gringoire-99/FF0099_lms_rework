@@ -46,7 +46,7 @@ public class BookController {
      * 信息
      */
     @RequestMapping("/info/{bookId}")
-    public R info(@PathVariable("bookId") Long bookId) {
+    public R info(@PathVariable("bookId") String bookId) {
         BookEntity book = bookService.getById(bookId);
 
         return R.ok().put("book", book);
@@ -76,7 +76,7 @@ public class BookController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] bookIds) {
+    public R delete(@RequestBody String[] bookIds) {
         bookService.removeByIds(Arrays.asList(bookIds));
 
         return R.ok();

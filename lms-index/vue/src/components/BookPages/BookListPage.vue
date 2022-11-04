@@ -18,6 +18,7 @@
             <el-menu-item index="1" @click="openFilter">筛选</el-menu-item>
             <el-menu-item index="2" @mouseenter="openSearch">搜索</el-menu-item>
             <el-menu-item index="3" @click="reset()">重置</el-menu-item>
+            <el-menu-item index="4" @click="getDataList">刷新</el-menu-item>
           </el-menu>
 
         </el-header>
@@ -57,6 +58,7 @@
                     height="600"
                     max-height="600"
                     :default-sort="{ prop: 'bookId', order: 'descending' }"
+                    @row-dblclick="goDetail"
 
           >
             <!--     折叠子面板      -->
@@ -71,18 +73,18 @@
                     <el-aside width="350px">
                       <el-card class="box-card" shadow="always" style="overflow: clip">
                         <div class="hvr-box-shadow-outset">
-                          <img
-                              src="https://img.alicdn.com/imgextra/i1/2718889079/O1CN0197JYoj2GwEPkQLEcW_!!0-item_pic.jpg_430x430q90.jpg"
-                              class="image" style=" width: 300px;height: 300px;"
-                              alt="error"
-                          />
+                          <el-image :src="props.row.coverPic" style=" width: 300px;height: 300px;">
+
+                          </el-image>
                           <div style="padding: 14px">
                             <h4>{{ props.row.bookName }}</h4>
                             <el-icon>
                               <CollectionTag/>
                             </el-icon>
                             press by: {{ props.row.press }}
-                            <el-button text class="button hvr-bounce-to-right" type="primary">详情页</el-button>
+                            <el-button text class="button hvr-bounce-to-right" type="primary"
+                                       @click="goDetail(props.row)">详情页
+                            </el-button>
                           </div>
                         </div>
                       </el-card>
@@ -340,6 +342,7 @@
             </template>
           </el-dialog>
         </el-main>
+
         <el-footer>
           <el-pagination
               v-loading="isLoading"
@@ -361,9 +364,7 @@
 
 <script>
 import {Search} from '@element-plus/icons-vue'
-import {ElNotification} from 'element-plus'
 import axios from "axios";
-import {ElMessage, ElMessageBox} from 'element-plus'
 
 let propMap = new Map()
 const bookName = "书名"
@@ -396,7 +397,7 @@ export default {
       dataList: [],
       score: 0,
       scoreColors: ['#99A9BF', '#f68402', '#ff0026'],
-      comments : [],
+      comments: [],
       isOpenFilter: false,
       isOpenSearch: false,
       filters: {
@@ -464,8 +465,8 @@ export default {
     handleBorrowDialogConfirm() {
       this.borrowDialogVisible = false
 
-      if (Date.parse(this.borrowInfo.returnDate) < Date.parse(this.$currentDateTime)){
-        this.$errorPopUp("还书时间错误","失败")
+      if (Date.parse(this.borrowInfo.returnDate) < Date.parse(this.$currentDateTime)) {
+        this.$errorPopUp("还书时间错误", "失败")
         return
       }
       this.handleBorrow()
@@ -518,9 +519,9 @@ export default {
       let borrowTime = this.$currentDateTime()
 
       let returnTime
-      if (this.borrowInfo.returnDate&&this.borrowInfo.returnDate!==""){
+      if (this.borrowInfo.returnDate && this.borrowInfo.returnDate !== "") {
         returnTime = this.borrowInfo.returnDate
-      }else{
+      } else {
         returnTime = this.$returnDateTime(borrowTime)
       }
       let borrowRecord = {
@@ -583,6 +584,9 @@ export default {
         this.isLoading = false
       })
     },
+    goDetail(row) {
+      this.$router.push({path: "/DetailPage", query: {"bookId": row.bookId}});
+    }
 
   },
   mounted() {

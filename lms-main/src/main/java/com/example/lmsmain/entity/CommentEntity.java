@@ -35,10 +35,14 @@ public class CommentEntity implements Serializable {
 	/**
 	 * 踩数
 	 */
-	private Long dislikes;
+	private String dislikes;
 	/**
 	 * 书id
 	 */
-	private Long bookId;
+	private String bookId;
+	/**
+	 * 评分
+	 */
+	private Double score;
 
 }

@@ -74,7 +74,6 @@ app.config.globalProperties.$warningPopUp = warningPopUp
 app.config.globalProperties.$errorPopUp = errorPopUp
 app.config.globalProperties.$currentDateTime = getCurrentTime
 app.config.globalProperties.$returnDateTime = returnDateTime
-
 app.use(store)
 app.use(Router)
 app.mount('#app')

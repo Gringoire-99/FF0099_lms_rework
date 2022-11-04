@@ -103,7 +103,9 @@
               <el-collapse>
                 <el-collapse-item name="1" title="借阅记录">
                   <el-table :data="records" :border="true" :stripe="true"
-                            :row-style="rowState">
+                            :row-style="rowState"
+                            @row-dblclick="goDetail"
+                  >
                     <el-table-column :show-overflow-tooltip="true" label="书号" prop="bookId"></el-table-column>
                     <el-table-column :show-overflow-tooltip="true" label="借阅时间" prop="borrowTime"></el-table-column>
                     <el-table-column :show-overflow-tooltip="true" label="还书时间" prop="returnTime"></el-table-column>
@@ -207,6 +209,21 @@
         </el-container>
       </el-col>
     </transition>
+    <el-backtop :bottom="100">
+      <div
+          style="
+        height: 100%;
+        width: 100%;
+        background-color: var(--el-bg-color-overlay);
+        box-shadow: var(--el-box-shadow-lighter);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+      "
+      >
+        UP
+      </div>
+    </el-backtop>
   </el-row>
 
 
@@ -363,18 +380,21 @@ export default {
       let returnTime = Date.parse(new Date(row.returnTime).toString())
       if (returnTime < now) {
         return 'color:red'
-      } else if (now+twoDayTS>=returnTime){
+      } else if (now + twoDayTS >= returnTime) {
         return 'color:#f47920'
       }
       return '';
+    },
+    goDetail(row){
+      this.$router.push({path: "/DetailPage", query: {"bookId": row.bookId}});
     }
 
-  }, mounted() {
-    this.getUserData()
-    this.getRecords()
+  },
+  mounted() {
+
   },
   activated() {
-
+    this.getRecords()
     this.getUserData()
   }
 

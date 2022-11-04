@@ -75,5 +75,9 @@ public class BookEntity implements Serializable {
      * 图片的url地址
      */
     private String coverPic;
+/**
+ *  字数统计
+ */
+private String wordCount;
 
 }

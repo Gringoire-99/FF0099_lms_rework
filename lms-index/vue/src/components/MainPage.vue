@@ -82,7 +82,13 @@
         </el-scrollbar>
       </el-aside>
       <el-main>
-        <router-view v-if="isRouterAlive"></router-view>
+        <router-view v-slot="{ Component }">
+          <transition>
+            <keep-alive>
+              <component :is="Component"></component>
+            </keep-alive>
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </div>

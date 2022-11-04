@@ -46,7 +46,7 @@ public class CommentController {
      * 信息
      */
     @RequestMapping("/info/{userId}")
-    public R info(@PathVariable("userId") Long userId){
+    public R info(@PathVariable("userId") String userId){
 		CommentEntity comment = commentService.getById(userId);
 
         return R.ok().put("comment", comment);
@@ -76,7 +76,7 @@ public class CommentController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] userIds){
+    public R delete(@RequestBody String[] userIds){
 		commentService.removeByIds(Arrays.asList(userIds));
 
         return R.ok();

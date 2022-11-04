@@ -46,7 +46,7 @@ public class FavoritesController {
      * 信息
      */
     @RequestMapping("/info/{bookId}")
-    public R info(@PathVariable("bookId") Long bookId){
+    public R info(@PathVariable("bookId") String bookId){
 		FavoritesEntity favorites = favoritesService.getById(bookId);
 
         return R.ok().put("favorites", favorites);
@@ -76,7 +76,7 @@ public class FavoritesController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody Long[] bookIds){
+    public R delete(@RequestBody String[] bookIds){
 		favoritesService.removeByIds(Arrays.asList(bookIds));
 
         return R.ok();
