@@ -4,7 +4,7 @@
       name="animate__animated "
       enter-active-class="animate__fadeInLeft"
       leave-active-class="animate__bounceOut">
-    <div v-show="this.$store.state.isLogin">
+    <div>
       <el-container>
         <el-header>
           <div class="h-6"/>
@@ -199,13 +199,13 @@
             <el-table-column :show-overflow-tooltip="true" label="出版社" prop="press" sortable/>
             <el-table-column :show-overflow-tooltip="true" label="借阅数" prop="readingNumber" sortable/>
 
-            <el-table-column fixed="right" label="借阅" width="120">
+            <el-table-column fixed="right" label="借阅" width="120" >
               <template #default="scope">
-                <el-button link type="primary" @click="borrowBook(scope.row);"
+                <el-button link type="primary" @click="borrowBook(scope.row);" v-show="$store.state.isLogin"
                 >借阅
                 </el-button
                 >
-                <el-button link type="primary" @click="returnBook(scope.row)"
+                <el-button link type="primary" @click="returnBook(scope.row)" v-show="$store.state.isLogin"
                 >还书
                 </el-button
                 >

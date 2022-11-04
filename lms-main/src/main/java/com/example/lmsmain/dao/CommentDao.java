@@ -2,7 +2,11 @@ package com.example.lmsmain.dao;
 
 import com.example.lmsmain.entity.CommentEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.lmsmain.entity.vo.UserCommentVo;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 评论
@@ -13,5 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CommentDao extends BaseMapper<CommentEntity> {
-	
+    List<UserCommentVo> getComments(Map<String, Object> params);
 }

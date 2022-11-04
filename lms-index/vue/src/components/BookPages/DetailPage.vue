@@ -53,7 +53,7 @@
                       </el-col>
                       <el-col :span="12">
                         <div class="hvr-fade" style="width: 322px">
-                          <h3>{{ book.bookName }}</h3>
+                          <h3>《{{ book.bookName }}》</h3>
                           <p></p>
                         </div>
 
@@ -76,9 +76,20 @@
                                 :texts="['oops', 'disappointed', 'normal', 'good', 'great']"
                                 show-text
                             />
+
                           </el-descriptions-item>
+
                         </el-descriptions>
+
                         <p></p>
+                        <img style="height: 15px;width: 15px"
+                             src="../../assets/hot.svg"/><span style="margin-right: 15px">{{ book.likes }}人点赞</span>
+                        <img style="height: 15px;width: 15px"
+                             src="../../assets/star.svg"/><span style="margin-right: 15px">{{ book.stars }}人收藏</span>
+                        <img style="height: 15px;width: 15px"
+                             src="../../assets/comment.svg"/><span>{{ 0 }}人评论</span>
+                        <p></p>
+
                         <el-button class="hvr-back-pulse" size="large"
                                    style="color: white;background-color: #2098D1;width: 130px">免费试读!
                         </el-button>
@@ -134,22 +145,88 @@
               <p></p>
               <el-container>
                 <el-main>
-                  <h4>作品简介</h4>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid cumque est eveniet harum ipsam iure
-                  libero maxime minus modi nihil nostrum placeat quibusdam quo rerum totam, vero voluptate voluptatibus?
-                  Accusamus!Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid cumque est eveniet harum
-                  ipsam iure libero maxime minus modi nihil nostrum placeat quibusdam quo rerum totam, vero voluptate
-                  voluptatibus? Accusamus!Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid cumque est
-                  eveniet harum ipsam iure libero maxime minus modi nihil nostrum placeat quibusdam quo rerum totam,
-                  vero voluptate voluptatibus? Accusamus!
+                  <h4>
+                    <el-icon>
+                      <Collection/>
+                    </el-icon>
+                    作品简介
+                  </h4>
+                  {{book.summary}}
                   <p></p>
-                  <h4>作品目录</h4>
+                  <h4>
+                    <el-icon>
+                      <Reading/>
+                    </el-icon>
+                    作品目录
+                  </h4>
                   <p></p>
                   <li>ipsam</li>
                   <li>harum</li>
                   <li>eveniet</li>
                   <li>rerum</li>
                 </el-main>
+                <el-footer>
+                  <el-card>
+                    <div v-show="$store.state.isLogin">
+                      <h4>
+                        <el-icon>
+                          <ChatLineSquare/>
+                        </el-icon>
+                        评论
+                      </h4>
+                      <div>
+                        <el-row :gutter="2">
+                          <el-col :span="2">
+                            <el-avatar :src="user.avatarPic">
+                            </el-avatar>
+                          </el-col>
+                          <el-col :span="20">
+                            <el-input type="textarea" v-model="comment.content"></el-input>
+                          </el-col>
+                          <el-col :span="2">
+                            <el-popconfirm
+                                cancel-button-text="算了"
+                                confirm-button-text="发布"
+                                icon-color="#626AEF"
+                                title="发布评论？"
+                                @confirm="handleComment"
+                            >
+                              <template #reference>
+                                <el-button size="large" type="primary" style="height: 52px">发布</el-button>
+                              </template>
+                            </el-popconfirm>
+                          </el-col>
+                        </el-row>
+                        <p></p>
+                        <el-row :gutter="2">
+                          <el-col :span="2">
+                          </el-col>
+                          <el-col :span="22"> <span>给这个作品打个分吧！<el-rate
+                              v-model="comment.score"
+                              :texts="['oops', 'disappointed', 'normal', 'good', 'great']"
+                              show-text
+                          /></span></el-col>
+                        </el-row>
+                      </div>
+                      <hr>
+
+                      <el-pagination
+                          :hide-on-single-page="true"
+                          @size-change="sizeChangeHandle"
+                          @current-change="currentChangeHandle"
+                          v-model:currentPage="pageIndex"
+                          v-model:page-size="pageSize"
+                          :page-sizes="[5,10,20,40]"
+                          :background="true"
+                          layout="total, sizes, prev, pager, next, jumper"
+                          :total="totalPage"
+                      />
+                    </div>
+                    <div v-show="!$store.state.isLogin">
+                      <h2>请先登录</h2>
+                    </div>
+                  </el-card>
+                </el-footer>
               </el-container>
             </el-col>
 
@@ -168,14 +245,26 @@
               </el-carousel>
               <p></p>
               <h4>下载lmsApp!</h4>
-
+              <p></p>
+              <img src="../../assets/ad.png" style="width: 350px" class="hvr-grow-shadow">
+              <p></p>
+              <h4>作品标签（未实装）</h4>
+              <el-space wrap>
+                <el-tag size="large">小说</el-tag>
+                <el-tag size="large">当代文学</el-tag>
+                <el-tag size="large">人生</el-tag>
+                <el-tag size="large">中国文学</el-tag>
+                <el-tag size="large">经典</el-tag>
+              </el-space>
             </el-col>
           </el-row>
         </el-main>
 
       </el-container>
     </el-container>
+    <el-aside>
 
+    </el-aside>
   </el-container>
 
 </template>
@@ -185,8 +274,12 @@ import axios from "axios";
 
 export default {
   name: "DetailPage"
-  , data() {
+  ,
+  data() {
     return {
+      pageIndex: 1,
+      pageSize: 10,
+      totalPage: 0,
       icons: {},
       bookId: '',
       book: {
@@ -205,17 +298,81 @@ export default {
         score: 0,
         wordCount: 0
       },
+      user: {
+        avatarPic: '',
+        userId: '',
+        userName: ''
+      }
+      ,
       isCollapseNv: true,
-
+      comment: {
+        content: '',
+        userId: '',
+        commentTime: '',
+        score: 3.5,
+        bookId: ''
+      },
+      comments: []
     }
   },
   methods: {
+    sizeChangeHandle(val) {
+      this.pageSize = val
+      this.currentPage = 1
+      this.getComments()
+    },
+    // 当前页
+    currentChangeHandle(val) {
+      this.currentPage = val
+      this.getComments()
+    },
+    handleComment() {
+      let comment = this.comment
+      comment.bookId = this.bookId
+      comment.commentTime = this.$currentDateTime()
+      comment.userId = this.user.userId
+      axios.post("/api/comment/save", comment).then(({data}) => {
+        if (data.code !== 0) {
+          this.$errorPopUp(data.msg, "评论失败")
+        }
+        this.$successPopUp(data.msg, "评论成功")
+      }, reason => {
+        this.$errorPopUp("网络故障", "评论失败")
+      })
+    },
     getBookDetail() {
       let bookId = this.bookId
       axios.get(`/api/book/info/${bookId}`).then(resolve => {
         this.book = resolve.data.book
       }, reason => {
         this.$errorPopUp("网络请求失败", "错误")
+      })
+    },
+    getUserData() {
+      if (this.$store.state.isLogin) {
+        //挂载时申请用户的详细数据
+        let userId = localStorage.getItem("userId")
+        axios.get(`/api/user/info/${userId}`).then(value => {
+          if (value.data.code !== 0) {
+            this.$errorPopUp('获取时发生错误', '获取信息失败')
+            return
+          }
+          if (value.data.user !== null) {
+            this.user = value.data.user;
+
+          }
+        }, reason => {
+          this.$errorPopUp(reason.code, '服务器未响应')
+        })
+      }
+    },
+    getComments(){
+      axios.get("/api/comment/comments",{
+        params:{
+          limit:this.pageSize,
+          page:this.pageIndex,
+          bookId:this.bookId
+        }
       })
     }
   },
@@ -225,6 +382,7 @@ export default {
   activated() {
     this.bookId = this.$route.query.bookId
     this.getBookDetail()
+    this.getUserData()
   }
 }
 </script>
@@ -237,6 +395,7 @@ export default {
   margin: 0;
   text-align: center;
 }
+
 .el-carousel__item:nth-child(2n) {
   background-color: #99a9bf;
 }

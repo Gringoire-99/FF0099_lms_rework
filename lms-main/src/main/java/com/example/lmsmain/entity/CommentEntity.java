@@ -41,6 +41,10 @@ public class CommentEntity implements Serializable {
 	 */
 	private String bookId;
 	/**
+	 * 评论时间
+	 */
+	private String commentTime;
+	/**
 	 * 评分
 	 */
 	private Double score;

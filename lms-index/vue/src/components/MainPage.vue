@@ -85,7 +85,7 @@
         <router-view v-slot="{ Component }">
           <transition>
             <keep-alive>
-              <component :is="Component"></component>
+              <component :is="Component" ></component>
             </keep-alive>
           </transition>
         </router-view>
@@ -98,8 +98,6 @@
 import 'animate.css'
 import 'hover.css'
 import {ElNotification} from 'element-plus'
-import axios from "axios";
-
 export default {
   name: "MainPage",
   data() {

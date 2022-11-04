@@ -272,8 +272,8 @@ export default {
       },
       returnDate: '',
       isLoadingUser: true,
-      isLoadingRecords: true
-      , pageIndex: 1,
+      isLoadingRecords: true,
+      pageIndex: 1,
       pageSize: 5,
       totalPage: 0,
     }
@@ -394,6 +394,9 @@ export default {
 
   },
   activated() {
+    if (!this.$store.state.isLogin){
+      this.$warningPopUp('功能不可用','请登录')
+    }
     this.getRecords()
     this.getUserData()
   }

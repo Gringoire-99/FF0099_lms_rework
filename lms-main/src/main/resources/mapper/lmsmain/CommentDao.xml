@@ -3,7 +3,7 @@
 
 <mapper namespace="com.example.lmsmain.dao.CommentDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.example.lmsmain.entity.CommentEntity" id="commentMap">
         <result property="content" column="content"/>
         <result property="userId" column="user_id"/>
@@ -11,6 +11,15 @@
         <result property="dislikes" column="dislikes"/>
         <result property="bookId" column="book_id"/>
     </resultMap>
+    <select id="getComments" resultType="com.example.lmsmain.entity.vo.UserCommentVo">
+        select u.user_id,u.user_name,u.avatar_pic,c.content,c.likes,c.dislikes,c.score
+        from lms2.comment c
+                 left join lms2.user u on u.user_id = c.user_id
+        where c.book_id = #{bookId}
+        <if test="sidx !=null and order!=null">
+            AND order by #{sidx} order
+        </if>
+    </select>
 
 
 </mapper>

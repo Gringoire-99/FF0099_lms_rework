@@ -1,11 +1,14 @@
 package com.example.lmsmain.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.example.lmsmain.entity.vo.UserCommentVo;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.ast.OpLE;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,14 +43,17 @@ public class CommentController {
 
         return R.ok().put("page", page);
     }
-
-
+@RequestMapping("/comments")
+    public R comments(@RequestParam Map<String,Object> params){
+        List<UserCommentVo> comments = commentService.getComments(params);
+        return R.ok().put("list",comments);
+    }
     /**
      * 信息
      */
-    @RequestMapping("/info/{userId}")
-    public R info(@PathVariable("userId") String userId){
-		CommentEntity comment = commentService.getById(userId);
+    @RequestMapping("/info/{userId}/{bookId}")
+    public R info(@PathVariable("userId") String userId,@PathVariable("bookId") String bookId){
+		CommentEntity comment = commentService.getByIds(userId,bookId);
 
         return R.ok().put("comment", comment);
     }
@@ -57,9 +63,13 @@ public class CommentController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody CommentEntity comment){
+        CommentEntity old = commentService.getByIds(comment.getUserId(), comment.getBookId());
+        if (old !=null){
+            commentService.updateComment(comment);
+            return R.ok("已更新评论！");
+        }
 		commentService.save(comment);
-
-        return R.ok();
+        return R.ok("已上传！");
     }
 
     /**
