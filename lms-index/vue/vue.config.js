@@ -1,6 +1,8 @@
 const {defineConfig} = require('@vue/cli-service')
 
 module.exports = defineConfig({
+    assetsDir: 'public',
+    indexPath: 'index.html', //就是这条
     transpileDependencies: true,
     lintOnSave: false,
     devServer: {
@@ -29,7 +31,7 @@ module.exports = defineConfig({
                 }
             ]
         },
-        
+
     },
 
 })
