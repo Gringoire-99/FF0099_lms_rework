@@ -15,9 +15,7 @@
               text-color="#fff"
               active-text-color="#ffd04b"
           >
-            <el-menu-item index="1" @click="openFilter">筛选</el-menu-item>
             <el-menu-item index="2" @mouseenter="openSearch">搜索</el-menu-item>
-            <el-menu-item index="3" @click="reset()">重置</el-menu-item>
             <el-menu-item index="4" @click="getDataList">刷新</el-menu-item>
           </el-menu>
 
@@ -57,8 +55,8 @@
                     :border="true"
                     height="600"
                     max-height="600"
-                    :default-sort="{ prop: 'bookId', order: 'descending' }"
                     @row-dblclick="goDetail"
+                    @sort-change="handleSortChange"
 
           >
             <!--     折叠子面板      -->
@@ -95,12 +93,7 @@
                        图书简介
                       </span></h4>
                         <span>
-                          Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquid culpa dolore earum esse et eum
-                      expedita, fugit iste laudantium libero molestias optio reiciendis veniam voluptate! Eos ex
-                      provident saepe?Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ad cum id modi, molestiae nostrum rerum soluta. Corporis, dicta eveniet fugiat magnam maxime minima nam nesciunt porro, quas reprehenderit ullam!
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Distinctio dolores eius enim est, excepturi exercitationem explicabo illo inventore ipsa labore laboriosam magnam neque quas qui, quisquam reiciendis repellat similique voluptas.
-                      lorem  Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquid culpa dolore earum esse et eum
-                      lorem
+                          {{ props.row.summary }}
                       </span>
                       </div>
                       <div style="height: 300px">
@@ -160,28 +153,13 @@
                             </el-row>
                           </el-col>
                           <el-col :span="15">
-                            <div class="hvr-grow-shadow" style="height: 250px">
-                              <h4><span style="color: #cc0058">Comments</span></h4>
-                              <el-card shadow="always">
-                                <el-table :data="comments" style="width: 100%">
-                                  <el-table-column label="用户" width="180">
-                                    <template #default="scope">
-                                      <div style="display: flex; align-items: center">
-                                        <el-icon>
-                                          <ChatLineRound/>
-                                        </el-icon>
-                                        <span style="margin-left: 10px">{{ scope.row.name }}</span>
-                                      </div>
-                                    </template>
-                                  </el-table-column>
-                                  <el-table-column label="Comments" width="180">
-                                    <template #default="scope">
-                                      <div>{{ scope.row.comment }}</div>
-                                    </template>
-                                  </el-table-column>
-                                </el-table>
-                              </el-card>
-                            </div>
+                            <span style="color: #250b20"><h4>Pictures</h4></span>
+                            <p></p>
+                            <el-carousel height="200px">
+                              <el-carousel-item v-for="item in 4" :key="item">
+                                <h3 class="small justify-center" text="2xl">{{ item }}</h3>
+                              </el-carousel-item>
+                            </el-carousel>
                           </el-col>
                         </el-row>
                       </div>
@@ -191,15 +169,15 @@
               </template>
             </el-table-column>
             <!--表格属性-->
-            <el-table-column :show-overflow-tooltip="true" label="书号" prop="bookId" sortable/>
-            <el-table-column :show-overflow-tooltip="true" label="书名" prop="bookName" sortable/>
-            <el-table-column :show-overflow-tooltip="true" label="作者" prop="author" sortable/>
-            <el-table-column :show-overflow-tooltip="true" label="价格" prop="price" sortable/>
-            <el-table-column :show-overflow-tooltip="true" label="库存" prop="number" sortable/>
+            <el-table-column :show-overflow-tooltip="true" label="书号" prop="bookId" sortable="custom"/>
+            <el-table-column :show-overflow-tooltip="true" label="书名" prop="bookName" sortable="custom"/>
+            <el-table-column :show-overflow-tooltip="true" label="作者" prop="author" sortable="custom"/>
+            <el-table-column :show-overflow-tooltip="true" label="价格" prop="price" sortable="custom"/>
+            <el-table-column :show-overflow-tooltip="true" label="库存" prop="number" sortable="custom"/>
             <el-table-column :show-overflow-tooltip="true" label="出版社" prop="press" sortable/>
-            <el-table-column :show-overflow-tooltip="true" label="借阅数" prop="readingNumber" sortable/>
+            <el-table-column :show-overflow-tooltip="true" label="借阅数" prop="readingNumber" sortable="custom"/>
 
-            <el-table-column fixed="right" label="借阅" width="120" >
+            <el-table-column fixed="right" label="借阅" width="120">
               <template #default="scope">
                 <el-button link type="primary" @click="borrowBook(scope.row);" v-show="$store.state.isLogin"
                 >借阅
@@ -561,7 +539,7 @@ export default {
       })
 
     },
-    getDataList() {
+    getDataList(sidx,order) {
       let limit = this.pageSize
       let page = this.pageIndex
       let key = this.keyWord
@@ -571,7 +549,9 @@ export default {
           limit,
           page,
           key,
-          prop
+          prop,
+          sidx,
+          order
         }
       }).then(({data}) => {
         if (data && data.code === 0) {
@@ -586,11 +566,20 @@ export default {
     },
     goDetail(row) {
       this.$router.push({path: "/DetailPage", query: {"bookId": row.bookId}});
+    },
+    handleSortChange({ column, prop, order }){
+      if (order==='ascending'){
+        order = 'asc'
+      }else if (order === 'descending'){
+        order = 'desc'
+      }
+      this.getDataList(prop,order)
+
     }
 
   },
   mounted() {
-    this.getDataList()
+    this.getDataList("bookId","asc")
     this.icon.Search = Search
   }
 
@@ -605,5 +594,19 @@ export default {
   background-color: #545c64;
   color: #ffd04b;
 }
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 150px;
+  margin: 0;
+  text-align: center;
+}
 
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
 </style>

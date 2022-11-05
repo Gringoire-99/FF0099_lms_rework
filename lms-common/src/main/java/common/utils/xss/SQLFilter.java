@@ -32,9 +32,7 @@ public class SQLFilter {
         str = StringUtils.replace(str, "\"", "");
         str = StringUtils.replace(str, ";", "");
         str = StringUtils.replace(str, "\\", "");
-
-        //转换成小写
-        str = str.toLowerCase();
+        str = str.replaceAll("[A-Z]", "_$0");
 
         //非法字符
         String[] keywords = {"master", "truncate", "insert", "select", "delete", "update", "declare", "alter", "drop"};

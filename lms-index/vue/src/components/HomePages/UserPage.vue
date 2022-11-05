@@ -101,7 +101,7 @@
             </el-header>
             <el-main v-loading="isLoadingRecords" class="hvr-border-fade">
               <el-collapse>
-                <el-collapse-item name="1" title="借阅记录">
+                <el-collapse-item name="1" title="待还">
                   <el-table :data="records" :border="true" :stripe="true"
                             :row-style="rowState"
                             @row-dblclick="goDetail"
@@ -132,10 +132,6 @@
                           <el-descriptions-item align="center" label="还书时间" label-align="right">
                             <el-tag size="small">{{ props.row.returnTime }}</el-tag>
                           </el-descriptions-item>
-                          <el-descriptions-item align="center" label="摘要" label-align="right"
-                          >{{ books[props.$index].summary }}
-                          </el-descriptions-item
-                          >
                           <el-descriptions-item align="center" label="出版社" label-align="right"
                           >{{ books[props.$index].press }}
                           </el-descriptions-item
@@ -181,7 +177,7 @@
                       :total="totalPage_favorites"
                   />
                 </el-collapse-item>
-                <el-collapse-item name="3" title="待还">
+                <el-collapse-item name="3" title="充值记录">
                   <div>
                     <el-timeline>
                       <el-timeline-item
