@@ -2,10 +2,8 @@ package com.example.lmsmain.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.lmsmain.entity.CommentEntity;
-import com.example.lmsmain.entity.vo.UserCommentVo;
 import common.utils.PageUtils;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +21,8 @@ public interface CommentService extends IService<CommentEntity> {
 
     void updateComment(CommentEntity comment);
 
-    List<UserCommentVo> getComments(Map<String, Object> params);
+    PageUtils getComments(Map<String, Object> params);
+
+    Integer getTotalCount(String bookId);
 }
 

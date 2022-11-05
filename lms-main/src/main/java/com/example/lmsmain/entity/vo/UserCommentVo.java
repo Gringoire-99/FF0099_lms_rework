@@ -34,5 +34,4 @@ public class UserCommentVo {
      */
     private String avatarPic;
 
-
 }

@@ -17,7 +17,7 @@
             </el-icon>
             <template #title>收藏</template>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="2" @click="handleFavorite">
             <el-icon>
               <Pointer/>
             </el-icon>
@@ -93,7 +93,7 @@
                         <el-button class="hvr-back-pulse" size="large"
                                    style="color: white;background-color: #2098D1;width: 130px">免费试读!
                         </el-button>
-                        <el-button circle>
+                        <el-button circle @click="handleFavorite">
                           <el-icon>
                             <Star/>
                           </el-icon>
@@ -151,7 +151,7 @@
                     </el-icon>
                     作品简介
                   </h4>
-                  {{book.summary}}
+                  {{ book.summary }}
                   <p></p>
                   <h4>
                     <el-icon>
@@ -197,15 +197,50 @@
                             </el-popconfirm>
                           </el-col>
                         </el-row>
+
                         <p></p>
                         <el-row :gutter="2">
                           <el-col :span="2">
                           </el-col>
-                          <el-col :span="22"> <span>给这个作品打个分吧！<el-rate
+                          <el-col :span="22" style="margin-bottom: 15px"> <span>给这个作品打个分吧！<el-rate
                               v-model="comment.score"
                               :texts="['oops', 'disappointed', 'normal', 'good', 'great']"
                               show-text
                           /></span></el-col>
+                          <hr>
+                          <p></p>
+                          <el-row :gutter="2" v-for="(comment,index) in comments" :key="index" style="margin-top: 10px">
+                            <el-col :span="2">
+                              <el-avatar :src="comment.avatarPic"></el-avatar>
+                            </el-col>
+                            <el-col :span="20">
+                              <div style="width: 700px;">
+                                <el-link type="primary">{{ comment.userName }}:</el-link>
+                                <br>
+                                {{ comment.content }}
+                                <p></p>
+                                <el-rate style="margin-right: 10px"
+                                         :texts="['oops', 'disappointed', 'normal', 'good', 'great']"
+                                         show-text v-model="comment.score"></el-rate>
+                                <span>
+                                   点赞
+                                <el-button style="height: 15px;width: 15px" type="danger" plain circle><img
+                                    style="height: 15px;width: 15px"
+                                    src="../../assets/like.svg"/></el-button>
+                                {{ comment.likes }}
+                                </span>
+                                <span>  踩<el-button style="height: 15px;width: 15px" type="info" plain circle><img
+                                    style="height: 15px;width: 15px"
+                                    src="../../assets/dislike.svg"/></el-button>
+                                {{ comment.dislikes }}
+
+                               </span>
+
+                                <hr>
+                              </div>
+
+                            </el-col>
+                          </el-row>
                         </el-row>
                       </div>
                       <hr>
@@ -280,6 +315,8 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       totalPage: 0,
+      orderField: 'c.comment_time',
+      order: 'desc',
       icons: {},
       bookId: '',
       book: {
@@ -336,6 +373,7 @@ export default {
           this.$errorPopUp(data.msg, "评论失败")
         }
         this.$successPopUp(data.msg, "评论成功")
+        this.getComments()
       }, reason => {
         this.$errorPopUp("网络故障", "评论失败")
       })
@@ -366,13 +404,50 @@ export default {
         })
       }
     },
-    getComments(){
-      axios.get("/api/comment/comments",{
-        params:{
-          limit:this.pageSize,
-          page:this.pageIndex,
-          bookId:this.bookId
+    getComments() {
+      axios.get("/api/comment/comments", {
+        params: {
+          limit: this.pageSize,
+          page: this.pageIndex,
+          bookId: this.bookId,
+          orderField: this.orderField,
+          order: this.order
         }
+      }).then(({data}) => {
+        if (data.code !== 0) {
+          this.$errorPopUp(data.msg, "评论加载失败")
+          this.comments = []
+          return
+        }
+        this.totalPage = data.page.totalCount
+        this.comments = data.page.list
+      }, reason => {
+        this.$errorPopUp(reason.code, "评论加载失败")
+        this.comments = []
+        this.totalPage = 0
+      })
+    },
+    handleFavorite(){
+      let userId = this.userId
+      let bookId = this.bookId
+      let url = `http://localhost:8081/#/DetailPage?bookId=${bookId}`
+      if (userId===''||userId){
+        this.$errorPopUp("请先登录！","错误")
+        return
+      }
+      let favorites = {
+        bookId,
+        userId,
+        url
+      }
+      axios.post("/api/favorites/save",favorites).then(({data})=>{
+        if (data.code!==0){
+          this.$errorPopUp(data.msg,"错误")
+          return
+        }
+        this.$successPopUp(data.msg,"收藏成功")
+      },reason => {
+        this.$errorPopUp(reason.code,"错误")
       })
     }
   },
@@ -383,6 +458,7 @@ export default {
     this.bookId = this.$route.query.bookId
     this.getBookDetail()
     this.getUserData()
+    this.getComments()
   }
 }
 </script>

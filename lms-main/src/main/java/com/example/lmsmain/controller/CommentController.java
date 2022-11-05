@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.lmsmain.entity.vo.UserCommentVo;
+import common.utils.Constant;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,8 @@ public class CommentController {
     }
 @RequestMapping("/comments")
     public R comments(@RequestParam Map<String,Object> params){
-        List<UserCommentVo> comments = commentService.getComments(params);
-        return R.ok().put("list",comments);
+    PageUtils page = commentService.getComments(params);
+        return R.ok().put("page",page);
     }
     /**
      * 信息

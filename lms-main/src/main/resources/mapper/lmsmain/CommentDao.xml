@@ -16,9 +16,19 @@
         from lms2.comment c
                  left join lms2.user u on u.user_id = c.user_id
         where c.book_id = #{bookId}
-        <if test="sidx !=null and order!=null">
-            AND order by #{sidx} order
+        <if test="orderField !=null and order!=null">
+            order by ${orderField} ${order}
         </if>
+        <if test="start !=null and limit!=null">
+            limit #{start},#{limit}
+        </if>
+
+
+    </select>
+    <select id="getTotalCount" resultType="java.lang.Integer">
+        select count(1)
+        from lms2.comment
+        where book_id = #{bookId}
     </select>
 
 

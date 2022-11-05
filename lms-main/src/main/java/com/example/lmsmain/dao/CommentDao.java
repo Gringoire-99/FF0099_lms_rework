@@ -18,4 +18,5 @@ import java.util.Map;
 @Mapper
 public interface CommentDao extends BaseMapper<CommentEntity> {
     List<UserCommentVo> getComments(Map<String, Object> params);
+    Integer getTotalCount(String bookId);
 }

@@ -1,13 +1,12 @@
 package com.example.lmsmain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.example.lmsmain.entity.UserEntity;
 import com.example.lmsmain.entity.vo.UserCommentVo;
+import common.utils.Constant;
 import common.utils.PageUtils;
 import common.utils.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -49,8 +48,20 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
     }
 
     @Override
-    public List<UserCommentVo> getComments(Map<String, Object> params) {
-        return this.baseMapper.getComments(params);
+    public PageUtils getComments(Map<String, Object> params) {
+        int curPage = new Integer((String) params.get(Constant.PAGE));
+        int limit = new Integer((String) params.get(Constant.LIMIT));
+        int start = (curPage-1)*limit;
+        String bookId = (String) params.get("bookId");
+        params.put("start",start);
+        params.put("limit",limit);
+        List<UserCommentVo> comments = this.baseMapper.getComments(params);
+        return new PageUtils(comments,this.getTotalCount(bookId),limit,curPage);
+    }
+
+    @Override
+    public Integer getTotalCount(String bookId) {
+        return this.baseMapper.getTotalCount(bookId);
     }
 
 }
