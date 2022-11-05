@@ -18,6 +18,7 @@
         <module>lms-common</module>
         <module>lms-gateway</module>
         <module>lms-main</module>
+        <module>lms-admin</module>
     </modules>
 
     <name>lms</name>
