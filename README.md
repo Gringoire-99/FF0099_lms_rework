@@ -1,1 +1,1 @@
-# FF0099_lms_rework
+# 需要打开nacos服务 && 运行sql创建数据库，并修改yaml文件

@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: lms-gateway
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+    gateway:
+      routes:
+        - id: main_route
+          uri: lb://lms-main
+          predicates:
+            - Path=/admin/lmsmain/**
+          filters:
+            - RewritePath=/admin/(?<segment>.*),/$\{segment}
+        - id: admin_route
+          uri: lb://lms-admin
+          predicates:
+            - Path=/admin/**
+          filters:
+            - RewritePath=/admin/(?<segment>.*),/lms-admin/$\{segment}
+
+server:
+  port: 88
