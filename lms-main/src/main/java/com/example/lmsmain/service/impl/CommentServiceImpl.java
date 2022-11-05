@@ -64,4 +64,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
         return this.baseMapper.getTotalCount(bookId);
     }
 
+    @Override
+    public void updateLike(String bookId, String userId) {
+        LambdaQueryWrapper<CommentEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(CommentEntity::getBookId,bookId);
+        lqw.eq(CommentEntity::getUserId,userId);
+        CommentEntity comment = this.getOne(lqw);
+        comment.setLikes(comment.getLikes()+1);
+        this.update(comment,lqw);
+    }
+
 }

@@ -1,25 +1,14 @@
 package com.example.lmsmain.controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import com.example.lmsmain.entity.vo.UserCommentVo;
-import common.utils.Constant;
+import com.example.lmsmain.entity.CommentEntity;
+import com.example.lmsmain.service.CommentService;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.ast.OpLE;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.lmsmain.entity.CommentEntity;
-import com.example.lmsmain.service.CommentService;
-
-
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -39,37 +28,45 @@ public class CommentController {
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = commentService.queryPage(params);
 
         return R.ok().put("page", page);
     }
-@RequestMapping("/comments")
-    public R comments(@RequestParam Map<String,Object> params){
-    PageUtils page = commentService.getComments(params);
-        return R.ok().put("page",page);
+
+    @RequestMapping("/comments")
+    public R comments(@RequestParam Map<String, Object> params) {
+        PageUtils page = commentService.getComments(params);
+        return R.ok().put("page", page);
     }
+
     /**
      * 信息
      */
     @RequestMapping("/info/{userId}/{bookId}")
-    public R info(@PathVariable("userId") String userId,@PathVariable("bookId") String bookId){
-		CommentEntity comment = commentService.getByIds(userId,bookId);
+    public R info(@PathVariable("userId") String userId, @PathVariable("bookId") String bookId) {
+        CommentEntity comment = commentService.getByIds(userId, bookId);
 
         return R.ok().put("comment", comment);
+    }
+
+    @RequestMapping("/updateLike/{bookId}/{userId}")
+    public R updateLike(@PathVariable("bookId") String bookId,@PathVariable("userId") String userId) {
+        commentService.updateLike(bookId,userId);
+        return R.ok();
     }
 
     /**
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody CommentEntity comment){
+    public R save(@RequestBody CommentEntity comment) {
         CommentEntity old = commentService.getByIds(comment.getUserId(), comment.getBookId());
-        if (old !=null){
+        if (old != null) {
             commentService.updateComment(comment);
             return R.ok("已更新评论！");
         }
-		commentService.save(comment);
+        commentService.save(comment);
         return R.ok("已上传！");
     }
 
@@ -77,8 +74,8 @@ public class CommentController {
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody CommentEntity comment){
-		commentService.updateById(comment);
+    public R update(@RequestBody CommentEntity comment) {
+        commentService.updateById(comment);
 
         return R.ok();
     }
@@ -87,8 +84,8 @@ public class CommentController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody String[] userIds){
-		commentService.removeByIds(Arrays.asList(userIds));
+    public R delete(@RequestBody String[] userIds) {
+        commentService.removeByIds(Arrays.asList(userIds));
 
         return R.ok();
     }

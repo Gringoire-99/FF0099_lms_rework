@@ -77,4 +77,12 @@ public class BookServiceImpl extends ServiceImpl<BookDao, BookEntity> implements
         });
         return this.getBaseMapper().selectBatchIds(ids);
     }
+
+    public void updateLike(String bookId) {
+        LambdaQueryWrapper<BookEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(BookEntity::getBookId,bookId);
+        BookEntity book = this.getOne(lqw);
+        book.setLikes(book.getLikes()+1);
+        this.update(book,lqw);
+    }
 }

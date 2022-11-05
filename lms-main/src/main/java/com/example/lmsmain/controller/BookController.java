@@ -74,7 +74,11 @@ public class BookController {
     @RequestMapping("/update")
     public R update(@RequestBody BookEntity book) {
         bookService.updateById(book);
-
+        return R.ok();
+    }
+    @RequestMapping("/updateLike/{bookId}")
+    public R updateLike(@PathVariable("bookId") String bookId) {
+        bookService.updateLike(bookId);
         return R.ok();
     }
 

@@ -30,13 +30,23 @@
               </el-menu-item>
             </template>
           </el-popconfirm>
+          <el-popover
+              placement="bottom"
+              title="点赞成功！"
+              :width="200"
+              trigger="click"
+              content="或许你还可以留下你的评论！"
+          >
+            <template #reference>
+              <el-menu-item index="2" @click="updateBookLike" :disabled="isDisableBookLike">
+                <el-icon>
+                  <Pointer/>
+                </el-icon>
+                <template #title>点赞</template>
+              </el-menu-item>
+            </template>
+          </el-popover>
 
-          <el-menu-item index="2">
-            <el-icon>
-              <Pointer/>
-            </el-icon>
-            <template #title>点赞</template>
-          </el-menu-item>
           <el-menu-item index="3">
             <el-icon>
               <Share/>
@@ -133,11 +143,22 @@
                             <Share/>
                           </el-icon>
                         </el-button>
-                        <el-button circle>
-                          <el-icon>
-                            <Pointer/>
-                          </el-icon>
-                        </el-button>
+                        <el-popover
+                            placement="bottom"
+                            title="点赞成功！"
+                            :width="200"
+                            trigger="click"
+                            content="或许你还可以留下你的评论！"
+                        >
+                          <template #reference>
+                            <el-button circle @click="updateBookLike" :disabled="isDisableBookLike">
+                              <el-icon>
+                                <Pointer/>
+                              </el-icon>
+                            </el-button>
+                          </template>
+                        </el-popover>
+
 
                       </el-col>
                     </el-row>
@@ -249,10 +270,23 @@
                                          show-text v-model="comment.score"></el-rate>
                                 <span>
                                    点赞
-                                <el-button style="height: 15px;width: 15px" type="danger" plain circle><img
-                                    style="height: 15px;width: 15px"
-                                    src="../../assets/like.svg"/></el-button>
+                                   <el-popover
+                                       placement="bottom"
+                                       title="点赞成功！"
+                                       :width="200"
+                                       trigger="click"
+                                       content="或许你还可以留下你的评论！"
+                                   >
+                                      <template #reference>
+                                        <el-button style="height: 15px;width: 15px" type="danger" plain circle
+                                                   @click="updateCommentLike"><img
+                                            style="height: 15px;width: 15px"
+                                            src="../../assets/like.svg"/></el-button>
+                                      </template>
+                                  </el-popover>
+
                                 {{ comment.likes }}
+
                                 </span>
                                 <span>  踩<el-button style="height: 15px;width: 15px" type="info" plain circle><img
                                     style="height: 15px;width: 15px"
@@ -375,6 +409,7 @@ export default {
         score: 3.5,
         bookId: ''
       },
+      isDisableBookLike: false,
       comments: []
     }
   },
@@ -419,7 +454,7 @@ export default {
     },
     getUserData() {
       let userId = localStorage.getItem("userId")
-      if (this.$store.state.isLogin&&userId&&userId!=='') {
+      if (this.$store.state.isLogin && userId && userId !== '') {
         //挂载时申请用户的详细数据
         let bookId = this.bookId
         axios.get(`/api/user/info/${userId}`).then(value => {
@@ -428,7 +463,7 @@ export default {
             return
           }
           this.user = value.data.user
-          this.getFavoriteState(bookId,userId)
+          this.getFavoriteState(bookId, userId)
         }, reason => {
           this.$errorPopUp(reason.code, '服务器未响应')
         })
@@ -483,7 +518,7 @@ export default {
         this.$errorPopUp(reason.code, "错误")
       })
     },
-    getFavoriteState(bookId,userId){
+    getFavoriteState(bookId, userId) {
       axios.get(`/api/favorites/info/${bookId}/${userId}`).then(({data}) => {
         if (data.code !== 0 || !data) {
           this.$errorPopUp(data.msg, "错误")
@@ -491,12 +526,27 @@ export default {
         }
         if (data.favorites != null) {
           this.isFavorite = true
-        }else {
-          this.isFavorite=false
+        } else {
+          this.isFavorite = false
         }
 
       }, reason => {
         this.$errorPopUp(reason.msg, "错误")
+      })
+    },
+    updateBookLike() {
+      this.isDisableBookLike = true
+      axios.get(`/api/book/updateLike/${this.book.bookId}`).then(({data}) => {
+        this.getBookDetail()
+      }, reason => {
+        this.$errorPopUp(reason.code, "错误")
+      })
+    },
+    updateCommentLike(event) {
+      axios.get(`/api/comment/updateLike/${this.book.bookId}`).then(({data}) => {
+        this.getBookDetail()
+      }, reason => {
+        this.$errorPopUp(reason.code, "错误")
       })
     }
   },

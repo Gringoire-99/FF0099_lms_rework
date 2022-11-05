@@ -24,5 +24,7 @@ public interface CommentService extends IService<CommentEntity> {
     PageUtils getComments(Map<String, Object> params);
 
     Integer getTotalCount(String bookId);
+
+    void updateLike(String bookId, String userId);
 }
 
