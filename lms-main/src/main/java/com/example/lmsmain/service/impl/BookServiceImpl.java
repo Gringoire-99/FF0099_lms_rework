@@ -67,4 +67,14 @@ public class BookServiceImpl extends ServiceImpl<BookDao, BookEntity> implements
         book.setStars(book.getStars()+number);
         this.update(book, lqw);
     }
+
+    @Override
+    public List<BookEntity> getBooksByFavorites(List<FavoritesEntity> favoritesEntities) {
+        ArrayList<String> ids = new ArrayList<>();
+        if (favoritesEntities.size() == 0)return new ArrayList<>();
+        favoritesEntities.forEach((record)->{
+            ids.add(record.getBookId());
+        });
+        return this.getBaseMapper().selectBatchIds(ids);
+    }
 }

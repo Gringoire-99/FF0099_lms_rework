@@ -157,10 +157,29 @@
                       :total="totalPage"
                   />
                 </el-collapse-item>
-                <el-collapse-item name="2" title="收藏图书">
-                  <div>
-                    施工中
-                  </div>
+                <el-collapse-item name="2" title="收藏图书" v-loading="isLoadingFavorites">
+                  <el-table :data="books_favorite" :border="true" :stripe="true"
+                              @row-dblclick="goDetail"
+                >
+                  <el-table-column :show-overflow-tooltip="true" label="书号" prop="bookId"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="书名" prop="bookName"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="阅读数" prop="readingNumber"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="出版社" prop="press"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="点赞数" prop="likes"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="收藏数" prop="stars"></el-table-column>
+                  <el-table-column :show-overflow-tooltip="true" label="字数统计" prop="wordCount"></el-table-column>
+                </el-table>
+                  <el-pagination
+                      :small="true"
+                      @size-change="sizeChangeHandle_favorites"
+                      @current-change="currentChangeHandle_favorites"
+                      v-model:currentPage="pageIndex_favorites"
+                      v-model:page-size="pageSize_favorites"
+                      :page-sizes="[5,10,20,40]"
+                      :background="true"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="totalPage_favorites"
+                  />
                 </el-collapse-item>
                 <el-collapse-item name="3" title="待还">
                   <div>
@@ -261,6 +280,7 @@ export default {
       },
       records: [],
       books: [],
+      books_favorite: [],
       readingBook: {
         bookAuthor: '',
         bookId: '',
@@ -276,6 +296,11 @@ export default {
       pageIndex: 1,
       pageSize: 5,
       totalPage: 0,
+      isLoadingFavorites: true,
+      pageIndex_favorites: 1,
+      pageSize_favorites: 5,
+      totalPage_favorites: 0,
+      favorites:[]
     }
 
   },
@@ -289,6 +314,16 @@ export default {
     },
     // 当前页
     currentChangeHandle(val) {
+      this.currentPage = val
+      this.getRecords()
+    },
+    sizeChangeHandle_favorites(val) {
+      this.pageSize = val
+      this.currentPage = 1
+      this.getRecords()
+    },
+    // 当前页
+    currentChangeHandle_favorites(val) {
       this.currentPage = val
       this.getRecords()
     },
@@ -343,7 +378,6 @@ export default {
             userId
           }
         }).then(({data}) => {
-          console.log(data.page)
           if (data && data.code === 0) {
             this.records = data.page.list
             this.getBooks(data.page.list)
@@ -387,6 +421,46 @@ export default {
     },
     goDetail(row){
       this.$router.push({path: "/DetailPage", query: {"bookId": row.bookId}});
+    },
+    getFavorites(){
+      this.isLoadingFavorites=true
+      axios.get("/api/favorites/list",{
+        params:{
+          userId:this.user.userId,
+          page:this.pageIndex_favorites,
+          limit:this.pageSize_favorites
+        }
+      }).then(({data})=>{
+        if (data.code!==0){
+          this.$errorPopUp(data.msg,"收藏数据获取失败")
+          this.totalPage_favorites = 0
+          this.favorites = []
+          return
+        }
+        this.isLoadingFavorites=false
+        this.favorites= data.page.list
+        this.totalPage_favorites = data.page.totalPage
+        this.getFavoriteBooks(this.favorites)
+      },reason => {
+        this.$errorPopUp(reason.msg,"收藏数据获取失败")
+        this.totalPage_favorites = 0
+        this.favorites = []
+      })
+    },
+    getFavoriteBooks(favorites){
+      axios.post(`/api/book/getBooksByFavorites`,
+          favorites
+      ).then(({data}) => {
+        if (data && data.code === 0) {
+          this.books_favorite = data.list
+          this.isLoadingFavorites = false
+        } else {
+          this.books_favorite = []
+          this.$errorPopUp('获取时发生错误', '获取信息失败')
+        }
+      }, reason => {
+        this.$errorPopUp(reason.code, '服务器未响应')
+      })
     }
 
   },
@@ -399,6 +473,7 @@ export default {
     }
     this.getRecords()
     this.getUserData()
+    this.getFavorites()
   }
 
 }

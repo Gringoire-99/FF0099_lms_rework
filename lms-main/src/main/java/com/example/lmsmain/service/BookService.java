@@ -24,5 +24,7 @@ public interface BookService extends IService<BookEntity> {
     List<BookEntity> getBooksByRecord(List<BorrowRecordEntity> records);
 
     void updateByFavorite(FavoritesEntity favorites, int i);
+
+    List<BookEntity> getBooksByFavorites(List<FavoritesEntity> favoritesEntities);
 }
 

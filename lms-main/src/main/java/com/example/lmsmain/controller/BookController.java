@@ -2,6 +2,7 @@ package com.example.lmsmain.controller;
 
 import com.example.lmsmain.entity.BookEntity;
 import com.example.lmsmain.entity.BorrowRecordEntity;
+import com.example.lmsmain.entity.FavoritesEntity;
 import com.example.lmsmain.service.BookService;
 import common.utils.PageUtils;
 import common.utils.R;
@@ -35,10 +36,15 @@ public class BookController {
 
         return R.ok().put("page", page);
     }
-
+    //TODO 需要被改造为VO
     @RequestMapping("/getBooksByRecord")
     public R getBooksByRecord(@RequestBody List<BorrowRecordEntity> records) {
         List<BookEntity> books = bookService.getBooksByRecord(records);
+        return R.ok().put("list",books);
+    }
+    @RequestMapping("/getBooksByFavorites")
+    public R getBooksByFavorite(@RequestBody List<FavoritesEntity> favoritesEntities) {
+        List<BookEntity> books = bookService.getBooksByFavorites(favoritesEntities);
         return R.ok().put("list",books);
     }
 
