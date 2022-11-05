@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button  type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button  type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('lmsadmin:comment:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('lmsadmin:comment:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -23,6 +23,7 @@
         width="50">
       </el-table-column>
       <el-table-column
+        :show-overflow-tooltip="true"
         prop="content"
         header-align="center"
         align="center"
@@ -51,6 +52,18 @@
         header-align="center"
         align="center"
         label="书id">
+      </el-table-column>
+      <el-table-column
+        prop="score"
+        header-align="center"
+        align="center"
+        label="评分">
+      </el-table-column>
+      <el-table-column
+        prop="commentTime"
+        header-align="center"
+        align="center"
+        label="">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -106,7 +119,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/lmsmain/comment/list'),
+          url: this.$http.adornUrl('/lmsadmin2/comment/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -157,7 +170,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/lmsmain/comment/delete'),
+            url: this.$http.adornUrl('/lmsadmin2/comment/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {

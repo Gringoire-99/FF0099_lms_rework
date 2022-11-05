@@ -40,6 +40,9 @@
     <el-form-item label="图片的url地址" prop="coverPic">
       <el-input v-model="dataForm.coverPic" placeholder="图片的url地址"></el-input>
     </el-form-item>
+    <el-form-item label="字数统计" prop="wordCount">
+      <el-input v-model="dataForm.wordCount" placeholder="字数统计"></el-input>
+    </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -66,7 +69,8 @@
           likes: '',
           price: '',
           summary: '',
-          coverPic: ''
+          coverPic: '',
+          wordCount: ''
         },
         dataRule: {
           isDeleted: [
@@ -104,6 +108,9 @@
           ],
           coverPic: [
             { required: true, message: '图片的url地址不能为空', trigger: 'blur' }
+          ],
+          wordCount: [
+            { required: true, message: '字数统计不能为空', trigger: 'blur' }
           ]
         }
       }
@@ -116,7 +123,7 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.bookId) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/book/info/${this.dataForm.bookId}`),
+              url: this.$http.adornUrl(`/lmsadmin2/book/info/${this.dataForm.bookId}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
@@ -133,6 +140,7 @@
                 this.dataForm.price = data.book.price
                 this.dataForm.summary = data.book.summary
                 this.dataForm.coverPic = data.book.coverPic
+                this.dataForm.wordCount = data.book.wordCount
               }
             })
           }
@@ -143,7 +151,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/book/${!this.dataForm.bookId ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/lmsadmin2/book/${!this.dataForm.bookId ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData({
                 'bookId': this.dataForm.bookId || undefined,
@@ -158,7 +166,8 @@
                 'likes': this.dataForm.likes,
                 'price': this.dataForm.price,
                 'summary': this.dataForm.summary,
-                'coverPic': this.dataForm.coverPic
+                'coverPic': this.dataForm.coverPic,
+                'wordCount': this.dataForm.wordCount
               })
             }).then(({data}) => {
               if (data && data.code === 0) {

@@ -46,7 +46,7 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.bookId) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/favorites/info/${this.dataForm.bookId}`),
+              url: this.$http.adornUrl(`/lmsadmin2/favorites/info/${this.dataForm.bookId}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
@@ -63,7 +63,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/favorites/${!this.dataForm.bookId ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/lmsadmin2/favorites/${!this.dataForm.bookId ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData({
                 'bookId': this.dataForm.bookId || undefined,

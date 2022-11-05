@@ -28,6 +28,12 @@
     <el-form-item label="余额" prop="balance">
       <el-input v-model="dataForm.balance" placeholder="余额"></el-input>
     </el-form-item>
+    <el-form-item label="备注" prop="remark" >
+      <el-input v-model="dataForm.remark" placeholder="备注"></el-input>
+    </el-form-item>
+    <el-form-item label="出生日期" prop="birthdate">
+      <el-input v-model="dataForm.birthdate" placeholder="出生日期"></el-input>
+    </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -50,7 +56,9 @@
           borrowNumber: '',
           email: '',
           avatarPic: '',
-          balance: ''
+          balance: '',
+          remark: '',
+          birthdate: ''
         },
         dataRule: {
           userName: [
@@ -76,6 +84,12 @@
           ],
           balance: [
             { required: true, message: '余额不能为空', trigger: 'blur' }
+          ],
+          remark: [
+            { required: true, message: '备注不能为空', trigger: 'blur' }
+          ],
+          birthdate: [
+            { required: true, message: '出生日期不能为空', trigger: 'blur' }
           ]
         }
       }
@@ -88,7 +102,7 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.userId) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/user/info/${this.dataForm.userId}`),
+              url: this.$http.adornUrl(`/lmsadmin2/user/info/${this.dataForm.userId}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
@@ -101,6 +115,8 @@
                 this.dataForm.email = data.user.email
                 this.dataForm.avatarPic = data.user.avatarPic
                 this.dataForm.balance = data.user.balance
+                this.dataForm.remark = data.user.remark
+                this.dataForm.birthdate = data.user.birthdate
               }
             })
           }
@@ -111,7 +127,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/user/${!this.dataForm.userId ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/lmsadmin2/user/${!this.dataForm.userId ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData({
                 'userName': this.dataForm.userName,
@@ -122,7 +138,9 @@
                 'borrowNumber': this.dataForm.borrowNumber,
                 'email': this.dataForm.email,
                 'avatarPic': this.dataForm.avatarPic,
-                'balance': this.dataForm.balance
+                'balance': this.dataForm.balance,
+                'remark': this.dataForm.remark,
+                'birthdate': this.dataForm.birthdate
               })
             }).then(({data}) => {
               if (data && data.code === 0) {

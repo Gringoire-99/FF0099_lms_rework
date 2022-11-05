@@ -12,6 +12,12 @@ spring:
             - Path=/admin/lmsmain/**
           filters:
             - RewritePath=/admin/(?<segment>.*),/$\{segment}
+        - id: admin2_route
+          uri: lb://lms-admin2
+          predicates:
+            - Path=/admin/lmsadmin2/**
+          filters:
+            - RewritePath=/admin/lmsadmin2/(?<segment>.*),/lmsadmin/$\{segment}
         - id: admin_route
           uri: lb://lms-admin
           predicates:

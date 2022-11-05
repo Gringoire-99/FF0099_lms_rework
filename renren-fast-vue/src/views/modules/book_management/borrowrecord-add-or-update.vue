@@ -53,7 +53,7 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.userId) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/borrowrecord/info/${this.dataForm.userId}`),
+              url: this.$http.adornUrl(`/lmsadmin2/borrowrecord/info/${this.dataForm.userId}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
@@ -71,7 +71,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/lmsmain/borrowrecord/${!this.dataForm.userId ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/lmsadmin2/borrowrecord/${!this.dataForm.userId ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData({
                 'userId': this.dataForm.userId || undefined,

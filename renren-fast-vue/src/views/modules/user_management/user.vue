@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button  type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button  type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('lmsadmin:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('lmsadmin:user:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -65,6 +65,7 @@
         label="邮箱">
       </el-table-column>
       <el-table-column
+        :show-overflow-tooltip="true"
         prop="avatarPic"
         header-align="center"
         align="center"
@@ -75,6 +76,19 @@
         header-align="center"
         align="center"
         label="余额">
+      </el-table-column>
+      <el-table-column
+        :show-overflow-tooltip="true"
+        prop="remark"
+        header-align="center"
+        align="center"
+        label="备注">
+      </el-table-column>
+      <el-table-column
+        prop="birthdate"
+        header-align="center"
+        align="center"
+        label="出生日期">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -130,7 +144,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/lmsmain/user/list'),
+          url: this.$http.adornUrl('/lmsadmin2/user/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -181,7 +195,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/lmsmain/user/delete'),
+            url: this.$http.adornUrl('/lmsadmin2/user/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
