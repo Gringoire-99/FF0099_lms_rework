@@ -1,5 +1,6 @@
 package com.example.lmsmain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,6 +25,22 @@ public class FavoritesServiceImpl extends ServiceImpl<FavoritesDao, FavoritesEnt
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public FavoritesEntity getByIds(String bookId, String userId) {
+        LambdaQueryWrapper<FavoritesEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(FavoritesEntity::getBookId,bookId);
+        lqw.eq(FavoritesEntity::getUserId,userId);
+        return this.getOne(lqw);
+    }
+
+    @Override
+    public boolean removeById(String bookId, String userId) {
+        LambdaQueryWrapper<FavoritesEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(FavoritesEntity::getBookId,bookId);
+        lqw.eq(FavoritesEntity::getUserId,userId);
+        return this.remove(lqw);
     }
 
 }

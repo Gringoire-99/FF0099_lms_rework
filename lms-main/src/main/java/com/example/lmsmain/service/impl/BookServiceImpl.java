@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.lmsmain.dao.BookDao;
 import com.example.lmsmain.entity.BookEntity;
 import com.example.lmsmain.entity.BorrowRecordEntity;
+import com.example.lmsmain.entity.FavoritesEntity;
 import com.example.lmsmain.service.BookService;
 import common.utils.Constant;
 import common.utils.PageUtils;
@@ -56,5 +57,14 @@ public class BookServiceImpl extends ServiceImpl<BookDao, BookEntity> implements
             ids.add(record.getBookId());
         });
         return this.getBaseMapper().selectBatchIds(ids);
+    }
+
+    @Override
+    public void updateByFavorite(FavoritesEntity favorites, int number) {
+        LambdaQueryWrapper<BookEntity> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(BookEntity::getBookId,favorites.getBookId());
+        BookEntity book = this.getById(favorites.getBookId());
+        book.setStars(book.getStars()+number);
+        this.update(book, lqw);
     }
 }

@@ -1,21 +1,15 @@
 package com.example.lmsmain.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.example.lmsmain.entity.FavoritesEntity;
+import com.example.lmsmain.service.FavoritesService;
+import com.example.lmsmain.service.impl.BookServiceImpl;
 import common.utils.PageUtils;
 import common.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.lmsmain.entity.FavoritesEntity;
-import com.example.lmsmain.service.FavoritesService;
-
-
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -31,11 +25,13 @@ public class FavoritesController {
     @Autowired
     private FavoritesService favoritesService;
 
+    @Autowired
+    private BookServiceImpl bookService;
     /**
      * 列表
      */
     @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = favoritesService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -45,9 +41,9 @@ public class FavoritesController {
     /**
      * 信息
      */
-    @RequestMapping("/info/{bookId}")
-    public R info(@PathVariable("bookId") String bookId){
-		FavoritesEntity favorites = favoritesService.getById(bookId);
+    @RequestMapping("/info/{bookId}/{userId}")
+    public R info(@PathVariable("bookId") String bookId, @PathVariable("userId") String userId) {
+        FavoritesEntity favorites = favoritesService.getByIds(bookId, userId);
 
         return R.ok().put("favorites", favorites);
     }
@@ -56,18 +52,23 @@ public class FavoritesController {
      * 保存
      */
     @RequestMapping("/save")
-    public R save(@RequestBody FavoritesEntity favorites){
-		favoritesService.save(favorites);
-
-        return R.ok();
+    public R save(@RequestBody FavoritesEntity favorites) {
+        if (favoritesService.getByIds(favorites.getBookId(), favorites.getUserId()) != null) {
+            favoritesService.removeById(favorites.getBookId(), favorites.getUserId());
+            bookService.updateByFavorite(favorites,-1);
+            return R.ok("取消收藏");
+        }
+        favoritesService.save(favorites);
+        bookService.updateByFavorite(favorites,1);
+        return R.ok("收藏成功");
     }
 
     /**
      * 修改
      */
     @RequestMapping("/update")
-    public R update(@RequestBody FavoritesEntity favorites){
-		favoritesService.updateById(favorites);
+    public R update(@RequestBody FavoritesEntity favorites) {
+        favoritesService.updateById(favorites);
 
         return R.ok();
     }
@@ -76,8 +77,8 @@ public class FavoritesController {
      * 删除
      */
     @RequestMapping("/delete")
-    public R delete(@RequestBody String[] bookIds){
-		favoritesService.removeByIds(Arrays.asList(bookIds));
+    public R delete(@RequestBody String[] bookIds) {
+        favoritesService.removeByIds(Arrays.asList(bookIds));
 
         return R.ok();
     }

@@ -3,6 +3,7 @@ package com.example.lmsmain.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.lmsmain.entity.BookEntity;
 import com.example.lmsmain.entity.BorrowRecordEntity;
+import com.example.lmsmain.entity.FavoritesEntity;
 import common.utils.PageUtils;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface BookService extends IService<BookEntity> {
      void updateByRecord(BorrowRecordEntity borrowRecord,Integer number);
 
     List<BookEntity> getBooksByRecord(List<BorrowRecordEntity> records);
+
+    void updateByFavorite(FavoritesEntity favorites, int i);
 }
 

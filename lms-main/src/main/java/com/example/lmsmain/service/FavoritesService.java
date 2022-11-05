@@ -16,5 +16,9 @@ import java.util.Map;
 public interface FavoritesService extends IService<FavoritesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    FavoritesEntity getByIds(String bookId, String userId);
+
+    boolean removeById(String bookId, String userId);
 }
 

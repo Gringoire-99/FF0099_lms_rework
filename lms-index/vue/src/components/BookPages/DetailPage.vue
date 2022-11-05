@@ -11,13 +11,27 @@
             default-active="2"
             :collapse="isCollapseNv"
         >
-          <el-menu-item index="1">
-            <el-icon>
-              <Star/>
-            </el-icon>
-            <template #title>收藏</template>
-          </el-menu-item>
-          <el-menu-item index="2" @click="handleFavorite">
+          <el-popconfirm
+              cancel-button-text="算了"
+              confirm-button-text="好"
+              icon-color="#626AEF"
+              :title="isFavorite?'取消收藏？':'收藏此书？'"
+              @confirm="handleFavorite"
+          >
+            <template #reference>
+              <el-menu-item index="1">
+                <el-icon v-show="isFavorite">
+                  <img src="../../assets/star.svg" style="width: 20px;height: 20px">
+                </el-icon>
+                <el-icon v-show="!isFavorite">
+                  <Star/>
+                </el-icon>
+                <template #title>收藏</template>
+              </el-menu-item>
+            </template>
+          </el-popconfirm>
+
+          <el-menu-item index="2">
             <el-icon>
               <Pointer/>
             </el-icon>
@@ -93,11 +107,22 @@
                         <el-button class="hvr-back-pulse" size="large"
                                    style="color: white;background-color: #2098D1;width: 130px">免费试读!
                         </el-button>
-                        <el-button circle @click="handleFavorite">
-                          <el-icon>
-                            <Star/>
-                          </el-icon>
-                        </el-button>
+                        <el-popconfirm
+                            cancel-button-text="取消"
+                            confirm-button-text="好"
+                            icon-color="#626AEF"
+                            :title="isFavorite?'取消收藏？':'收藏此书？'"
+                            @confirm="handleFavorite"
+                        >
+                          <template #reference>
+                            <el-button circle>
+                              <el-icon>
+                                <Star/>
+                              </el-icon>
+                            </el-button>
+                          </template>
+                        </el-popconfirm>
+
                         <el-button circle>
                           <el-icon>
                             <ChatLineRound/>
@@ -335,6 +360,7 @@ export default {
         score: 0,
         wordCount: 0
       },
+      isFavorite: false,
       user: {
         avatarPic: '',
         userId: '',
@@ -380,25 +406,29 @@ export default {
     },
     getBookDetail() {
       let bookId = this.bookId
-      axios.get(`/api/book/info/${bookId}`).then(resolve => {
-        this.book = resolve.data.book
+      axios.get(`/api/book/info/${bookId}`).then(({data}) => {
+        if (data.code !== 0 || !data) {
+          this.$errorPopUp(data.msg, "错误")
+          return
+        }
+        this.book = data.book
       }, reason => {
         this.$errorPopUp("网络请求失败", "错误")
       })
+
     },
     getUserData() {
-      if (this.$store.state.isLogin) {
+      let userId = localStorage.getItem("userId")
+      if (this.$store.state.isLogin&&userId&&userId!=='') {
         //挂载时申请用户的详细数据
-        let userId = localStorage.getItem("userId")
+        let bookId = this.bookId
         axios.get(`/api/user/info/${userId}`).then(value => {
           if (value.data.code !== 0) {
             this.$errorPopUp('获取时发生错误', '获取信息失败')
             return
           }
-          if (value.data.user !== null) {
-            this.user = value.data.user;
-
-          }
+          this.user = value.data.user
+          this.getFavoriteState(bookId,userId)
         }, reason => {
           this.$errorPopUp(reason.code, '服务器未响应')
         })
@@ -427,12 +457,13 @@ export default {
         this.totalPage = 0
       })
     },
-    handleFavorite(){
-      let userId = this.userId
+    handleFavorite() {
+      let userId = this.user.userId
       let bookId = this.bookId
       let url = `http://localhost:8081/#/DetailPage?bookId=${bookId}`
-      if (userId===''||userId){
-        this.$errorPopUp("请先登录！","错误")
+      console.log(userId)
+      if (userId === '' || !userId) {
+        this.$errorPopUp("请先登录！", "错误")
         return
       }
       let favorites = {
@@ -440,14 +471,32 @@ export default {
         userId,
         url
       }
-      axios.post("/api/favorites/save",favorites).then(({data})=>{
-        if (data.code!==0){
-          this.$errorPopUp(data.msg,"错误")
+      axios.post("/api/favorites/save", favorites).then(({data}) => {
+        if (data.code !== 0) {
+          this.$errorPopUp(data.msg, "错误")
           return
         }
-        this.$successPopUp(data.msg,"收藏成功")
-      },reason => {
-        this.$errorPopUp(reason.code,"错误")
+        this.$successPopUp(data.msg, "操作成功")
+        this.isFavorite = !this.isFavorite
+        this.getBookDetail()
+      }, reason => {
+        this.$errorPopUp(reason.code, "错误")
+      })
+    },
+    getFavoriteState(bookId,userId){
+      axios.get(`/api/favorites/info/${bookId}/${userId}`).then(({data}) => {
+        if (data.code !== 0 || !data) {
+          this.$errorPopUp(data.msg, "错误")
+          return
+        }
+        if (data.favorites != null) {
+          this.isFavorite = true
+        }else {
+          this.isFavorite=false
+        }
+
+      }, reason => {
+        this.$errorPopUp(reason.msg, "错误")
       })
     }
   },
