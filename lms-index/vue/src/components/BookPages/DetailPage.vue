@@ -218,7 +218,22 @@
                         <el-icon>
                           <ChatLineSquare/>
                         </el-icon>
-                        评论
+                        评论<el-select v-model="orderField" class="m-2" placeholder="Select" size="large" @change="getComments">
+                        <el-option
+                            v-for="(item,index) in fields"
+                            :key="index"
+                            :label="item.label"
+                            :value="item.value"
+                        />
+                      </el-select>
+                        <el-select v-model="order" class="m-2" placeholder="Select" size="large" @change="getComments">
+                        <el-option
+                            v-for="(item,index) in orders"
+                            :key="index"
+                            :label="item.label"
+                            :value="item.value"
+                        />
+                      </el-select>
                       </h4>
                       <div>
                         <el-row :gutter="2">
@@ -253,6 +268,7 @@
                               :texts="['oops', 'disappointed', 'normal', 'good', 'great']"
                               show-text
                           /></span></el-col>
+
                           <hr>
                           <p></p>
                           <el-row :gutter="2" v-for="(comment,index) in comments" :key="index" style="margin-top: 10px">
@@ -374,7 +390,21 @@ export default {
       pageIndex: 1,
       pageSize: 10,
       totalPage: 0,
-      orderField: 'c.comment_time',
+      fields:[{
+        value:'comment_time',
+        label:"回复时间最近的评论"
+      },{
+        value: 'likes',
+        label:'最热门的评论'
+      }],
+      orders:[{
+        value:'asc',
+        label:"升序"
+      },{
+        value: 'desc',
+        label:'降序'
+      }],
+      orderField: 'comment_time',
       order: 'desc',
       icons: {},
       bookId: '',
@@ -543,11 +573,11 @@ export default {
       })
     },
     updateCommentLike(event) {
-      axios.get(`/api/comment/updateLike/${this.book.bookId}`).then(({data}) => {
-        this.getBookDetail()
-      }, reason => {
-        this.$errorPopUp(reason.code, "错误")
-      })
+      // axios.get(`/api/comment/updateLike/${this.book.bookId}`).then(({data}) => {
+      //   this.getBookDetail()
+      // }, reason => {
+      //   this.$errorPopUp(reason.code, "错误")
+      // })
     }
   },
   mounted() {

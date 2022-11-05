@@ -421,7 +421,9 @@ export default {
         bookId: '',
         returnDate: '',
         number: 0
-      }
+      },
+      prop:'bookId',
+      order:'asc'
     }
 
   },
@@ -539,7 +541,9 @@ export default {
       })
 
     },
-    getDataList(sidx,order) {
+    getDataList() {
+      let sidx = this.prop
+      let order =this.order
       let limit = this.pageSize
       let page = this.pageIndex
       let key = this.keyWord
@@ -567,19 +571,21 @@ export default {
     goDetail(row) {
       this.$router.push({path: "/DetailPage", query: {"bookId": row.bookId}});
     },
-    handleSortChange({ column, prop, order }){
-      if (order==='ascending'){
+    handleSortChange({column, prop, order}) {
+      if (order === 'ascending') {
         order = 'asc'
-      }else if (order === 'descending'){
+      } else if (order === 'descending') {
         order = 'desc'
       }
-      this.getDataList(prop,order)
+      this.order = order
+      this.prop = prop
+      this.getDataList()
 
     }
 
   },
   mounted() {
-    this.getDataList("bookId","asc")
+    this.getDataList()
     this.icon.Search = Search
   }
 
@@ -594,6 +600,7 @@ export default {
   background-color: #545c64;
   color: #ffd04b;
 }
+
 .el-carousel__item h3 {
   color: #475669;
   opacity: 0.75;

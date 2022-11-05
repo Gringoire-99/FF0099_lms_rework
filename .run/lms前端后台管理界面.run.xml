@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="后台管理界面" type="js.build_tools.npm">
+  <configuration default="false" name="lms前端后台管理界面" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/renren-fast-vue/package.json" />
     <command value="run" />
     <scripts>
